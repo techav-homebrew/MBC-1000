@@ -1,0 +1,3 @@
+Expansion cards need a small bracket to secure the card to the chassis. The original bracket is made out of bent steel. It is secured to the card using an M3 machine screw, and attaches to the chassis using a Nifco-Japan Niflatch fastener (it looks like part number `2012`)
+
+The FreeCAD and exported files were created from measuring an original part. It should be possible to machine or 3D print the bracket from these files, but they are untested.
