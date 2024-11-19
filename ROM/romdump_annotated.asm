@@ -3,9 +3,9 @@
 ; on Thursday, 14 of December 2023 at 09:25 PM
 ; annotated by techav
 ; 
-        ld      a,95h                   ; write $95 to PPI
+        ld      a,95h                   ; write $95 to PPI control register
         out     (0ebh),a                ;
-        ld      a,80h                   ; write $80 to PPI
+        ld      a,80h                   ; write $80 to PPI Port C
         out     (0eah),a                ;
 
 ; loop to clear character generator and video ram I/O regions
@@ -26,7 +26,12 @@ l000d:  ld      c,h                     ; C = $f0, which is start of Char RAM
 
 ; loop to initialize the CRTC. This will read data from a table and output
 ; it to the CRTC, ending at a 0 byte. 
-; data output will be $20, $20, $ff, $ff, $00
+; data output will be $ff, $ff, $00 ...
+;       0ech is the CRTC address register
+;       0edh is the CRTC register pointed to by the address register
+; this loop works backwards through the data ending at 00a9h
+; it outputs 0fh through 00h to the address register,
+; then outputs the table value to that register
         ld      hl,00a9h                ; load ROM address $00a9 into pointer HL
                                         ; (this is the start of the
                                         ; "  BOOT ERROR !" message. there are 18 bytes
@@ -139,1632 +144,2171 @@ l008e:  ld      c,d                     ; C = $f8
 
 ; I think everything that follows is data, not code
 l0099:                                  ; next byte read should be ROM address $0099
-        .db     07fh                    ; ld      a,a
-        .db     050h                    ; ld      d,b
-        .db     060h                    ; ld      h,b
-        .db     03ah                    ; ld      a,(0020h)
-        .db     020h                    ;
-        .db     00h                     ;
-        .db     019h                    ; add     hl,de
-        .db     01dh                    ; dec     e
-        .db     050h                    ; ld      d,b
-        .db     007h                    ; rlca    
-        .db     067h                    ; ld      h,a
-        .db     007h                    ; rlca    
-        .db     00h                     ; nop     
-        .db     00h                     ; nop     
-        .db     0ffh                    ; rst     38h
-        .db     0ffh                    ; rst     38h
-        .db     020h                    ; jr      nz,l00cb
-        .db     020h                    ; 
+; this is the CRTC initialization table
+        .db     07fh                    ; H Total (H Sync period in character times)
+                                        ;       total displayed characters plus non-displayed
+                                        ;       times retrace minus one
+                                        ;       Each line is 128 characters including HBlank
+        .db     050h                    ; H Displayed 
+                                        ;       number of displayed characters per line
+                                        ;       80 characters/line
+        .db     060h                    ; H Sync Position
+                                        ;       HSync starts at the 96 character position?
+        .db     03ah                    ; H Sync Width
+                                        ;       should only be a 4-bit value..
+                                        ;       HSync pulse is 10 character widths
+        .db     020h                    ; V Total
+                                        ;       32
+        .db     00h                     ; V Total Adjust
+                                        ;       0
+        .db     019h                    ; V Displayed
+                                        ;       number of displayed character rows
+                                        ;       must be less than VTotal
+                                        ;       31
+        .db     01dh                    ; V Sync Position
+                                        ;       character row times
+                                        ;       29
+        .db     050h                    ; Interlace & Skew
+                                        ;       this is only a 2-bit register?
+                                        ;       so .. normal sync, no interlace?
+        .db     007h                    ; Max Scan Line Address
+                                        ;       number of scanlines per character row
+                                        ;       8 scanlines per character
+        .db     067h                    ; Cursor Start
+                                        ;       blink 1/32 field rate, 7 pixels wide?
+        .db     007h                    ; Cursor End
+                                        ;       7 rows high?
+        .db     00h                     ; Start Address H
+        .db     00h                     ; Start Address L
+        .db     0ffh                    ; Cursor H
+        .db     0ffh                    ; Cursor L
 
 l00a9:  .ascii '  BOOT ERROR !',0
 
 ; here starts character / font data:
 CHAR_DAT: 
 l00b8:
-        .db     00h                     ; nop     
-        .db     00h                     ; nop     
-        .db     00h                     ; nop     
-        .db     00h                     ; nop     
-        .db     00h                     ; nop     
-        .db     00h                     ; nop     
-        .db     00h                     ; nop     
-        .db     08h                     ; ex      af,af'
-        .db     08h                     ; ex      af,af'
-        .db     08h                     ; ex      af,af'
-        .db     08h                     ; ex      af,af'
-        .db     00h                     ; nop     
-        .db     00h                     ; nop     
-        .db     08h                     ; ex      af,af'
-        .db     00h                     ; nop     
-        .db     024h                    ; inc     h
-        .db     024h                    ; inc     h
-        .db     024h                    ; inc     h
-l00cb:  .db     00h                     ; nop     
-        .db     00h                     ; nop     
-        .db     00h                     ; nop     
-        .db     00h                     ; nop     
-        .db     00h                     ; nop     
-        .db     024h                    ; inc     h
-        .db     024h                    ; inc     h
-        .db     07eh                    ; ld      a,(hl)
-        .db     024h                    ; inc     h
-        .db     07eh                    ; ld      a,(hl)
-        .db     024h                    ; inc     h
-        .db     024h                    ; inc     h
-        .db     00h                     ; nop     
-l00d8:  .db     08h                     ; ex      af,af'
-        .db     01eh, 028h              ; ld      e,28h
-        .db     01ch                    ; inc     e
-        ld      a,(bc)
-        inc     a
-        ex      af,af'
-        nop     
-        nop     
-        ld      h,d
-        ld      h,h
-        ex      af,af'
-        djnz    l010c
-        ld      b,(hl)
-        nop     
-        jr      nc,l0132
-        ld      c,b
-        jr      nc,l0137
-        ld      b,h
-        ld      a,(0400h)
-        ex      af,af'
-        djnz    l00f4
-l00f4:  nop     
-        nop     
-l00f6:  nop     
-        nop     
-        inc     b
-        ex      af,af'
-        djnz    l010c
-        djnz    l0106
-        inc     b
-        nop     
-        jr      nz,l0112
-        ex      af,af'
-        ex      af,af'
-        ex      af,af'
-        djnz    l0127
-        nop     
-        ex      af,af'
-        ld      hl,(3e1ch)
-l010c:  inc     e
-        ld      hl,(0008h)
-        nop     
-        ex      af,af'
-l0112:  ex      af,af'
-        ld      a,08h
-        ex      af,af'
-        nop     
-        nop     
-        nop     
-        nop     
-        nop     
-        nop     
-        nop     
-        ex      af,af'
-        ex      af,af'
-        djnz    l0121
-l0121:  nop     
-        nop     
-        ld      a,(hl)
-        nop     
-        nop     
-        nop     
-l0127:  nop     
-        nop     
-        nop     
-        nop     
-        nop     
-        nop     
-        jr      l0147
-        nop     
-        nop     
-        ld      (bc),a
-l0132:  inc     b
-        ex      af,af'
-        djnz    l0156
-        ld      b,b
-l0137:  nop     
-        inc     a
-        ld      b,d
-        ld      b,(hl)
-        ld      e,d
-        ld      h,d
-        ld      b,d
-        inc     a
-        nop     
-        ex      af,af'
-        jr      l016b
-        ex      af,af'
-        ex      af,af'
-        ex      af,af'
-        ld      a,00h
-        inc     a
-        ld      b,d
-        ld      (bc),a
-        inc     c
-        jr      nc,l018e
-        ld      a,(hl)
-        nop     
-        inc     a
-        ld      b,d
-        ld      (bc),a
-        inc     e
-        ld      (bc),a
-        ld      b,d
-l0156:  inc     a
-        nop     
-        inc     b
-        inc     c
-        inc     d
-        inc     h
-        ld      a,(hl)
-        inc     b
-        inc     b
-        nop     
-        ld      a,(hl)
-        ld      b,b
-        ld      a,b
-        inc     b
-        ld      (bc),a
-        ld      b,h
-        jr      c,l0168
-l0168:  inc     e
-        jr      nz,l01ab
-l016b:  ld      a,h
-        ld      b,d
-        ld      b,d
-        inc     a
-        nop     
-        ld      a,(hl)
-        ld      b,d
-        inc     b
-        ex      af,af'
-        djnz    l0186
-        djnz    l0178
-l0178:  inc     a
-        ld      b,d
-        ld      b,d
-        inc     a
-        ld      b,d
-        ld      b,d
-        inc     a
-        nop     
-        inc     a
-        ld      b,d
-        ld      b,d
-        ld      a,02h
-        inc     b
-l0186:  jr      c,l0188
-l0188:  nop     
-        nop     
-        ex      af,af'
-        nop     
-        nop     
-        ex      af,af'
-l018e:  nop     
-        nop     
-        nop     
-        nop     
-        ex      af,af'
-        nop     
-        nop     
-        ex      af,af'
-        ex      af,af'
-        djnz    l01a7
-        jr      l01cb
-        ld      h,b
-        jr      nc,l01b6
-        ld      c,00h
-        nop     
-        nop     
-        ld      a,(hl)
-        nop     
-        ld      a,(hl)
-        nop     
-        nop     
-l01a7:  nop     
-        ld      (hl),b
-        jr      l01b7
-l01ab:  ld      b,0ch
-        jr      l021f
-        nop     
-        inc     a
-        ld      b,d
-        ld      (bc),a
-        inc     c
-        djnz    l0235
-l01b6:  djnz    l01b8
-l01b8:  inc     e
-        ld      (564ah),hl
-        ld      c,h
-        jr      nz,l01dd
-        nop     
-        jr      l01e6
-        ld      b,d
-        ld      a,(hl)
-        ld      b,d
-        ld      b,d
-        ld      b,d
-        nop     
-        ld      a,h
-        ld      (3c22h),hl
-        ld      (7c22h),hl
-        nop     
-        inc     e
-        ld      (4040h),hl
-        ld      b,b
-        ld      (001ch),hl
-        ld      a,b
-        inc     h
-        ld      (2222h),hl
-l01dd:  inc     h
-        ld      a,b
-        nop     
-        ld      a,(hl)
-        ld      b,b
-        ld      b,b
-        ld      a,b
-        ld      b,b
-        ld      b,b
-l01e6:  ld      a,(hl)
-        nop     
-        ld      a,(hl)
-        ld      b,b
-        ld      b,b
-        ld      a,b
-        ld      b,b
-        ld      b,b
-        ld      b,b
-        nop     
-        inc     e
-        ld      (4e40h),hl
-        ld      b,d
-        ld      (001ch),hl
-        ld      b,d
-        ld      b,d
-        ld      b,d
-        ld      a,(hl)
-        ld      b,d
-        ld      b,d
-        ld      b,d
-        nop     
-        inc     e
-        ex      af,af'
-        ex      af,af'
-        ex      af,af'
-        ex      af,af'
-        ex      af,af'
-        inc     e
-        nop     
-        ld      c,04h
-        inc     b
-        inc     b
-        inc     b
-        ld      b,h
-        jr      c,l0210
-l0210:  ld      b,d
-        ld      b,h
-        ld      c,b
-        ld      (hl),b
-        ld      c,b
-        ld      b,h
-        ld      b,d
-        nop     
-        ld      b,b
-        ld      b,b
-        ld      b,b
-        ld      b,b
-        ld      b,b
-        ld      b,b
-        ld      a,(hl)
-l021f:  nop     
-        ld      b,d
-        ld      h,(hl)
-        ld      e,d
-        ld      e,d
-        ld      b,d
-        ld      b,d
-        ld      b,d
-        nop     
-        ld      b,d
-        ld      h,d
-        ld      d,d
-        ld      c,d
-        ld      b,(hl)
-        ld      b,d
-        ld      b,d
-        nop     
-        inc     a
-        ld      b,d
-        ld      b,d
-        ld      b,d
-        ld      b,d
-l0235:  ld      b,d
-        inc     a
-        nop     
-        ld      a,h
-        ld      b,d
-        ld      b,d
-        ld      a,h
-        ld      b,b
-        ld      b,b
-        ld      b,b
-        nop     
-        jr      l0266
-        ld      b,d
-        ld      b,d
-        ld      c,d
-        inc     h
-        ld      a,(de)
-        nop     
-        ld      a,h
-        ld      b,d
-        ld      b,d
-        ld      a,h
-        ld      c,b
-        ld      b,h
-        ld      b,d
-        nop     
-        inc     a
-        ld      b,d
-        ld      b,b
-        inc     a
-        ld      (bc),a
-        ld      b,d
-        inc     a
-        nop     
-        ld      a,08h
-        ex      af,af'
-        ex      af,af'
-        ex      af,af'
-        ex      af,af'
-        ex      af,af'
-        nop     
-        ld      b,d
-        ld      b,d
-        ld      b,d
-        ld      b,d
-        ld      b,d
-        ld      b,d
-l0266:  inc     a
-        nop     
-        ld      b,d
-        ld      b,d
-        ld      b,d
-        inc     h
-        inc     h
-        jr      l0287
-        nop     
-        ld      b,d
-        ld      b,d
-        ld      b,d
-        ld      e,d
-        ld      e,d
-        ld      h,(hl)
-        ld      b,d
-        nop     
-        ld      b,d
-        rst     38h
-        inc     h
-        jr      l02a1
-        ld      b,d
-        ld      b,d
-        nop     
-        ld      (2222h),hl
-        inc     e
-        ex      af,af'
-        ex      af,af'
-        ex      af,af'
-l0287:  nop     
-        ld      a,(hl)
-        ld      (bc),a
-        inc     b
-        jr      l02ad
-        ld      b,b
-        ld      a,(hl)
-        nop     
-        inc     a
-        jr      nz,l02b3
-        jr      nz,l02b5
-        jr      nz,l02d3
-        nop     
-        nop     
-        ld      b,b
-        jr      nz,l02ac
-        ex      af,af'
-        inc     b
-        ld      (bc),a
-        nop     
-        inc     a
-l02a1:  inc     b
-        inc     b
-        inc     b
-        inc     b
-        inc     b
-        inc     a
-        nop     
-        ex      af,af'
-        inc     d
-        ld      (0000h),hl
-l02ad:  nop     
-        nop     
-        nop     
-        nop     
-        nop     
-        nop     
-l02b3:  nop     
-        nop     
-l02b5:  nop     
-        ld      a,(hl)
-        nop     
-        djnz    l02c2
-        inc     b
-        nop     
-        nop     
-        nop     
-        nop     
-        nop     
-        nop     
-        nop     
-l02c2:  inc     a
-        inc     b
-        inc     a
-        ld      b,h
-        ld      a,(4000h)
-        ld      b,b
-        ld      e,h
-        ld      h,d
-        ld      b,d
-        ld      h,d
-        ld      e,h
-        nop     
-        nop     
-        nop     
-        inc     a
-l02d3:  ld      b,d
-        ld      b,b
-        ld      b,d
-        inc     a
-        nop     
-        ld      (bc),a
-        ld      (bc),a
-        ld      a,(4246h)
-        ld      b,(hl)
-        ld      a,(0000h)
-        nop     
-        inc     a
-        ld      b,d
-        ld      a,(hl)
-        ld      b,b
-        inc     a
-        nop     
-        inc     c
-        ld      (de),a
-        djnz    l0368
-        djnz    l02fe
-        djnz    l02f0
-l02f0:  nop     
-        nop     
-        ld      a,(4646h)
-        ld      a,(3c02h)
-        ld      b,b
-        ld      b,b
-        ld      e,h
-        ld      h,d
-        ld      b,d
-        ld      b,d
-l02fe:  ld      b,d
-        nop     
-        ex      af,af'
-        nop     
-        jr      l030c
-        ex      af,af'
-        ex      af,af'
-        inc     e
-        nop     
-        inc     b
-        nop     
-        inc     c
-        inc     b
-l030c:  inc     b
-        inc     b
-        ld      b,h
-        jr      c,l0351
-        ld      b,b
-        ld      b,h
-        ld      c,b
-        ld      d,b
-        ld      l,b
-        ld      b,h
-        nop     
-        jr      l0322
-        ex      af,af'
-        ex      af,af'
-        ex      af,af'
-        ex      af,af'
-        inc     e
-        nop     
-        nop     
-        nop     
-l0322:  halt    
-        ld      c,c
-        ld      c,c
-        ld      c,c
-        ld      c,c
-        nop     
-        nop     
-        nop     
-        ld      e,h
-        ld      h,d
-        ld      b,d
-        ld      b,d
-        ld      b,d
-        nop     
-        nop     
-        nop     
-        inc     a
-        ld      b,d
-        ld      b,d
-        ld      b,d
-        inc     a
-        nop     
-        nop     
-        nop     
-        ld      e,h
-        ld      h,d
-        ld      h,d
-        ld      e,h
-        ld      b,b
-        ld      b,b
-        nop     
-        nop     
-        ld      a,(4646h)
-        ld      a,(0202h)
-        nop     
-        nop     
-        ld      e,h
-        ld      h,d
-        ld      b,b
-        ld      b,b
-        ld      b,b
-        nop     
-        nop     
-l0351:  nop     
-        ld      a,40h
-        inc     a
-        ld      (bc),a
-        ld      a,h
-        nop     
-        djnz    l036a
-        ld      a,h
-        djnz    l036d
-        ld      (de),a
-        inc     c
-        nop     
-        nop     
-        nop     
-        ld      b,d
-        ld      b,d
-        ld      b,d
-        ld      b,(hl)
-        ld      a,(0000h)
-        nop     
-l036a:  ld      b,d
-        ld      b,d
-        ld      b,d
-l036d:  inc     h
-        jr      l0370
-l0370:  nop     
-        nop     
-        ld      b,c
-        ld      c,c
-        ld      c,c
-        ld      c,c
-        ld      (hl),00h
-        nop     
-        nop     
-        ld      b,d
-        inc     h
-        jr      l03a2
-        ld      b,d
-        nop     
-        nop     
-        nop     
-        ld      b,d
-        ld      b,d
-        ld      b,(hl)
-        ld      a,(3c02h)
-        nop     
-        nop     
-        ld      a,(hl)
-        inc     b
-        jr      l03ae
-        ld      a,(hl)
-        nop     
-        ld      c,10h
-        djnz    l03b4
-        djnz    l03a6
-        ld      c,00h
-        ex      af,af'
-        ex      af,af'
-        nop     
-        nop     
-        nop     
-        ex      af,af'
-        ex      af,af'
-        nop     
-        ld      (hl),b
-        ex      af,af'
-l03a2:  ex      af,af'
-        inc     b
-        ex      af,af'
-        ex      af,af'
-l03a6:  ld      (hl),b
-        nop     
-        jr      nc,l03f3
-        ld      b,00h
-        nop     
-        nop     
-l03ae:  nop     
-        nop     
-        nop     
-        nop     
-        nop     
-        nop     
-l03b4:  nop     
-        nop     
-        nop     
-        nop     
-        nop     
-        nop     
-        nop     
-        rst     38h
-        nop     
-        nop     
-        nop     
-        rst     38h
-        nop     
-        nop     
-        nop     
-        nop     
-        nop     
-        nop     
-        rst     38h
-        rst     38h
-        nop     
-        nop     
-        nop     
-        nop     
-        nop     
-        nop     
-        rst     38h
-        rst     38h
-        nop     
-        nop     
-        nop     
-        nop     
-        nop     
-        rst     38h
-        rst     38h
-        rst     38h
-        nop     
-        nop     
-        nop     
-        nop     
-        rst     38h
-        rst     38h
-        ld      bc,00ffh
-        nop     
-        nop     
-        nop     
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        nop     
-        nop     
-        nop     
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        nop     
-        nop     
-        rst     38h
-l03f3:  rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        nop     
-        nop     
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        nop     
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        add     a,b
-        add     a,b
-        add     a,b
-        add     a,b
-        add     a,b
-        add     a,b
-        add     a,b
-        add     a,b
-        ret     nz
+        .db     00h                     ; ........     
+        .db     00h                     ; ........
+        .db     00h                     ; ........     
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
 
-        ret     nz
+        .db     08h                     ; ....#... 
+        .db     08h                     ; ....#...
+        .db     08h                     ; ....#...
+        .db     08h                     ; ....#...
+        .db     00h                     ; ........
+        .db     00h                     ; ........ 
+        .db     08h                     ; ....#...
+        .db     00h                     ; ........
 
-        ret     nz
+        .db     024h                    ; ..#..#..
+        .db     024h                    ; ..#..#..
+        .db     024h                    ; ..#..#..
+l00cb:  .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
 
-        ret     nz
+        .db     024h                    ; ..#..#.. 
+        .db     024h                    ; ..#..#..
+        .db     07eh                    ; .######.
+        .db     024h                    ; ..#..#..
+        .db     07eh                    ; .######.
+        .db     024h                    ; ..#..#..
+        .db     024h                    ; ..#..#..
+        .db     00h                     ; ........
 
-        ret     nz
+        .db     08h                     ; ....#...
+        .db     1Eh                     ; ...####.
+        .db     28h                     ; ..#.#...
+        .db     1Ch                     ; ...###..
+        .db     0Ah                     ; ....#.#.
+        .db     3Ch                     ; ..####..
+        .db     08h                     ; ....#...
+        .db     00h                     ; ........
 
-        ret     nz
+        .db     00h                     ; ........
+        .db     62h                     ; .##...#.
+        .db     64h                     ; .##..#..
+        .db     08h                     ; ....#...
+        .db     10h                     ; ...#....
+        .db     26h                     ; ..#..##.
+        .db     46h                     ; .#...##.
+        .db     00h                     ; ........
 
-        ret     nz
+        .db     30h                     ; ..##....
+        .db     48h                     ; .#..#...
+        .db     48h                     ; .#..#...
+        .db     30h                     ; ..##....
+        .db     4Ah                     ; .#..#.#.
+        .db     44h                     ; .#...#..
+        .db     3Ah                     ; ..###.#.
+        .db     00h                     ; ........
 
-        ret     nz
+        .db     04h                     ; .....#..
+        .db     08h                     ; ....#...
+        .db     10h                     ; ...#....
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
 
-        ret     po
+        .db     04h                     ; .....#..
+        .db     08h                     ; ....#...
+        .db     10h                     ; ...#....
+        .db     10h                     ; ...#....
+        .db     10h                     ; ...#....
+        .db     08h                     ; ....#...
+        .db     04h                     ; .....#..
+        .db     00h                     ; ........
 
-        ret     po
+        .db     20h                     ; ..#.....
+        .db     10h                     ; ...#....
+        .db     08h                     ; ....#...
+        .db     08h                     ; ....#...
+        .db     08h                     ; ....#...
+        .db     10h                     ; ...#....
+        .db     20h                     ; ..#.....
+        .db     00h                     ; ........
 
-        ret     po
+        .db     08h                     ; ....#...
+        .db     2Ah                     ; ..#.#.#.
+        .db     1Ch                     ; ...###..
+        .db     3Eh                     ; ..#####.
+        .db     1Ch                     ; ...###..
+        .db     2Ah                     ; ..#.#.#.
+        .db     08h                     ; ....#...
+        .db     00h                     ; ........
 
-        ret     po
+        .db     00h                     ; ........
+        .db     08h                     ; ....#...
+        .db     08h                     ; ....#...
+        .db     3Eh                     ; ..#####.
+        .db     08h                     ; ....#...
+        .db     08h                     ; ....#...
+        .db     00h                     ; ........
+        .db     00h                     ; ........
 
-        ret     po
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     08h                     ; ....#...
+        .db     08h                     ; ....#...
+        .db     10h                     ; ...#....
 
-        ret     po
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     7Eh                     ; .######.
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
 
-        ret     po
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     18h                     ; ...##...
+        .db     18h                     ; ...##...
+        .db     00h                     ; ........
 
-        ret     po
+        .db     00h                     ; ........
+        .db     02h                     ; ......#.
+        .db     04h                     ; .....#..
+        .db     08h                     ; ....#...
+        .db     10h                     ; ...#....
+        .db     20h                     ; ..#.....
+        .db     40h                     ; .#......
+        .db     00h                     ; ........
 
-        ret     p
+        .db     3Ch                     ; ..####..
+        .db     42h                     ; .#....#.
+        .db     46h                     ; .#...##.
+        .db     5Ah                     ; .#.##.#.
+        .db     62h                     ; .##...#.
+        .db     42h                     ; .#....#.
+        .db     3Ch                     ; ..####..
+        .db     00h                     ; ........
 
-        ret     p
+        .db     08h                     ; ....#...
+        .db     18h                     ; ...##...
+        .db     28h                     ; ..#.#...
+        .db     08h                     ; ....#...
+        .db     08h                     ; ....#...
+        .db     08h                     ; ....#...
+        .db     3Eh                     ; ..#####.
+        .db     00h                     ; ........
 
-        ret     p
+        .db     3Ch                     ; ..####..
+        .db     42h                     ; .#....#.
+        .db     02h                     ; ......#.
+        .db     0Ch                     ; ....##..
+        .db     30h                     ; ..##....
+        .db     40h                     ; .#......
+        .db     7Eh                     ; .######.
+        .db     00h                     ; ........
 
-        ret     p
+        .db     3Ch                     ; ..####..
+        .db     42h                     ; .#....#.
+        .db     02h                     ; ......#.
+        .db     1Ch                     ; ...###..
+        .db     02h                     ; ......#.
+        .db     42h                     ; .#....#.
+        .db     3Ch                     ; ..####..
+        .db     00h                     ; ........
 
-        ret     p
+        .db     04h                     ; .....#..
+        .db     0Ch                     ; ....##..
+        .db     14h                     ; ...#.#..
+        .db     24h                     ; ..#..#..
+        .db     7Eh                     ; .######.
+        .db     04h                     ; .....#..
+        .db     04h                     ; .....#..
+        .db     00h                     ; ........
 
-        ret     p
+        .db     7Eh                     ; .######.
+        .db     40h                     ; .#......
+        .db     78h                     ; .####...
+        .db     04h                     ; .....#..
+        .db     02h                     ; ......#.
+        .db     44h                     ; .#...#..
+        .db     38h                     ; ..###...
+        .db     00h                     ; ........
 
-        ret     p
+        .db     1Ch                     ; ...###..
+        .db     20h                     ; ..#.....
+        .db     40h                     ; .#......
+        .db     7Ch                     ; .#####..
+        .db     42h                     ; .#....#.
+        .db     42h                     ; .#....#.
+        .db     3Ch                     ; ..####..
+        .db     00h                     ; ........
 
-        ret     p
+        .db     7Eh                     ; .######.
+        .db     42h                     ; .#....#.
+        .db     04h                     ; .....#..
+        .db     08h                     ; ....#...
+        .db     10h                     ; ...#....
+        .db     10h                     ; ...#....
+        .db     10h                     ; ...#....
+        .db     00h                     ; ........
 
-        ret     m
+        .db     3Ch                     ; ..####..
+        .db     42h                     ; .#....#.
+        .db     42h                     ; .#....#.
+        .db     3Ch                     ; ..####..
+        .db     42h                     ; .#....#.
+        .db     42h                     ; .#....#.
+        .db     3Ch                     ; ..####..
+        .db     00h                     ; ........
 
-        ret     m
+        .db     3Ch                     ; ..####..
+        .db     42h                     ; .#....#.
+        .db     42h                     ; .#....#.
+        .db     3Eh                     ; ..#####.
+        .db     02h                     ; ......#.
+        .db     04h                     ; .....#..
+        .db     38h                     ; ..###...
+        .db     00h                     ; ........
 
-        ret     m
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     08h                     ; ....#...
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     08h                     ; ....#...
+        .db     00h                     ; ........
+        .db     00h                     ; ........
 
-        ret     m
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     08h                     ; ....#...
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     08h                     ; ....#...
+        .db     08h                     ; ....#...
+        .db     10h                     ; ...#....
 
-        ret     m
+        .db     0Eh                     ; ....###.
+        .db     18h                     ; ...##...
+        .db     30h                     ; ..##....
+        .db     60h                     ; .##.....
+        .db     30h                     ; ..##....
+        .db     18h                     ; ...##...
+        .db     0Eh                     ; ....###.
+        .db     00h                     ; ........
 
-        ret     m
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     7Eh                     ; .######.
+        .db     00h                     ; ........
+        .db     7Eh                     ; .######.
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
 
-        ret     m
+        .db     70h                     ; .###....
+        .db     18h                     ; ...##...
+        .db     0Ch                     ; ....##..
+        .db     06h                     ; .....##.
+        .db     0Ch                     ; ....##..
+        .db     18h                     ; ...##...
+        .db     70h                     ; .###....
+        .db     00h                     ; ........
 
-        ret     m
+        .db     3Ch                     ; ..####..
+        .db     42h                     ; .#....#.
+        .db     02h                     ; ......#.
+        .db     0Ch                     ; ....##..
+        .db     10h                     ; ...#....
+        .db     7Fh                     ; .#######
+        .db     10h                     ; ...#....
+        .db     00h                     ; ........
 
-        call    m,lfcfc
-        call    m,lfcfc
-        call    m,lfefc
-        cp      0feh
-        cp      0feh
-        cp      0feh
-        cp      01h
-        ld      bc,0101h
-        ld      bc,0101h
-        ld      bc,0f0f0h
-        rrca    
-        rrca    
-        ret     p
+        .db     1Ch                     ; ...###..
+        .db     22h                     ; ..#...#.
+        .db     4Ah                     ; .#..#.#.
+        .db     56h                     ; .#.#.##.
+        .db     4Ch                     ; .#..##..
+        .db     20h                     ; ..#.....
+        .db     1Eh                     ; ...####.
+        .db     00h                     ; ........
 
-        ret     p
+        .db     18h                     ; ...##...
+        .db     24h                     ; ..#..#..
+        .db     42h                     ; .#....#.
+        .db     7Eh                     ; .######.
+        .db     42h                     ; .#....#.
+        .db     42h                     ; .#....#.
+        .db     42h                     ; .#....#.
+        .db     00h                     ; ........
 
-        rrca    
-        rrca    
-        call    z,lcc33
-        inc     sp
-        call    z,lcc33
-        inc     sp
-        nop     
-        inc     a
-        ld      a,(hl)
-        ld      a,(hl)
-        ld      a,(hl)
-        ld      a,(hl)
-        inc     a
-        nop     
-        nop     
-        inc     a
-        ld      b,d
-        ld      b,d
-        ld      b,d
-        ld      b,d
-        inc     a
-        nop     
-        nop     
-        nop     
-        nop     
-        nop     
-        rrca    
-        ex      af,af'
-        ex      af,af'
-        ex      af,af'
-        ex      af,af'
-        ex      af,af'
-        ex      af,af'
-        ex      af,af'
-        ret     m
+        .db     7Ch                     ; .#####..
+        .db     22h                     ; ..#...#.
+        .db     22h                     ; ..#...#.
+        .db     3Ch                     ; ..####..
+        .db     22h                     ; ..#...#.
+        .db     22h                     ; ..#...#.
+        .db     7Ch                     ; .#####..
+        .db     00h                     ; ........
 
-l0485:  nop     
-        nop     
-        nop     
-        ex      af,af'
-        ex      af,af'
-        ex      af,af'
-        ex      af,af'
-        rrca    
-        nop     
-        nop     
-        nop     
-        nop     
-        nop     
-        nop     
-        nop     
-        ret     m
+        .db     1Ch                     ; ...###..
+        .db     22h                     ; ..#...#.
+        .db     40h                     ; .#......
+        .db     40h                     ; .#......
+        .db     40h                     ; .#......
+        .db     22h                     ; ..#...#.
+        .db     1Ch                     ; ...###..
+        .db     00h                     ; ........
 
-        ex      af,af'
-        ex      af,af'
-        ex      af,af'
-        nop     
-        nop     
-        nop     
-        nop     
-        inc     bc
-        inc     b
-        ex      af,af'
-        ex      af,af'
-        ex      af,af'
-        ex      af,af'
-        ex      af,af'
-        djnz    l0485
-        nop     
-        nop     
-        nop     
-        ex      af,af'
-        ex      af,af'
-        ex      af,af'
-        inc     b
-        inc     bc
-        nop     
-        nop     
-        nop     
-        nop     
-        nop     
-        nop     
-        nop     
-        ret     po
+        .db     78h                     ; .####...
+        .db     24h                     ; ..#..#..
+        .db     22h                     ; ..#...#.
+        .db     22h                     ; ..#...#.
+        .db     22h                     ; ..#...#.
+        .db     24h                     ; ..#..#..
+        .db     78h                     ; .####...
+        .db     00h                     ; ........
 
-        djnz    l04bf
-        ex      af,af'
-        nop     
-        ld      a,h
-        ld      b,3ah
-        ld      b,d
-        ld      b,d
-        inc     a
-l04bf:  nop     
-        nop     
-        nop     
-        nop     
-        nop     
-        inc     e
-        inc     d
-        inc     e
-        nop     
-        inc     e
-        djnz    l04db
-        djnz    l04cd
-l04cd:  nop     
-        nop     
-        nop     
-        jr      l04f6
-        jr      nz,l04f4
-        ld      (hl),b
-        ld      (007ch),hl
-        djnz    l0502
-        ld      a,b
-l04db:  inc     b
-        inc     a
-        ld      b,h
-        ld      a,(0000h)
-        inc     h
-        ld      a,b
-        inc     b
-        inc     a
-        ld      b,h
-        ld      a,(0800h)
-        djnz    l0563
-        inc     b
-        inc     a
-        ld      b,h
-        ld      a,(3200h)
-        ld      c,h
-        jr      c,l04f8
-l04f4:  inc     a
-        ld      b,h
-l04f6:  ld      a,(0800h)
-        inc     d
-        inc     e
-        ld      (203eh),hl
-        inc     e
-        nop     
-        inc     d
-        nop     
-l0502:  inc     e
-        ld      (203eh),hl
-        inc     e
-        nop     
-        ex      af,af'
-        inc     d
-        nop     
-        jr      l0515
-        ex      af,af'
-        inc     e
-        nop     
-        nop     
-        inc     d
-        nop     
-        jr      l051d
-l0515:  ex      af,af'
-        inc     e
-        nop     
-        djnz    l0522
-        nop     
-        jr      l0525
-l051d:  ex      af,af'
-        inc     e
-        nop     
-        ex      af,af'
-        inc     d
-l0522:  inc     e
-        ld      (2222h),hl
-        inc     e
-        nop     
-        inc     d
-        nop     
-        inc     e
-        ld      (2222h),hl
-        inc     e
-        nop     
-        ex      af,af'
-        inc     b
-        inc     e
-        ld      (2222h),hl
-        inc     e
-        nop     
-        nop     
-        nop     
-        nop     
-        ld      a,00h
-        nop     
-        nop     
-        nop     
-        nop     
-        nop     
-        ld      h,b
-        djnz    l054d
-        ld      b,00h
-        nop     
-        ex      af,af'
-        inc     d
-        nop     
-        ld      (2422h),hl
-        ld      a,(de)
-        nop     
-        nop     
-        inc     d
-        nop     
-        ld      (2422h),hl
-        ld      a,(de)
-        nop     
-        ex      af,af'
-        inc     b
-        nop     
-        ld      (2422h),hl
-        ld      a,(de)
-        nop     
-        inc     h
-        nop     
-        jr      l0588
-        ld      b,d
-        ld      a,(hl)
-        ld      b,d
-        nop     
-        ex      af,af'
-        djnz    l05e9
-        ld      b,b
-        ld      a,h
-        ld      b,b
-        ld      a,(hl)
-        nop     
-        inc     h
-        nop     
-        inc     a
-        ld      b,d
-        ld      b,d
-        ld      b,d
-        inc     a
-        nop     
-        inc     h
-        nop     
-        ld      b,d
-        ld      b,d
-        ld      b,d
-        ld      b,d
-        inc     a
-        nop     
-        ld      (184ch),a
-        inc     h
-        ld      b,d
-        ld      a,(hl)
-        ld      b,d
-        nop     
-l0588:  ld      (004ch),a
-        ld      e,h
-        ld      h,d
-        ld      b,d
-        ld      b,d
-        nop     
-        ld      (224ch),a
-        ld      (262ah),a
-        ld      (1800h),hl
-        inc     h
-        jr      l05c0
-        ld      b,d
-        ld      a,(hl)
-        ld      b,d
-        nop     
-        nop     
-        ld      e,20h
-        ld      a,(hl)
-        jr      nz,l05c4
-        nop     
-        nop     
-        nop     
-        ld      (004ch),a
-        ld      (004ch),a
-        nop     
-        nop     
-        nop     
-        ld      (bc),a
-        ld      a,a
-        ex      af,af'
-        ld      a,a
-        jr      nz,l05b8
-l05b8:  jr      nz,l05ca
-        ld      a,b
-        inc     b
-        inc     a
-        rst     38h
-        ld      a,(0000h)
-        nop     
-        ld      (bc),a
-        ld      (bc),a
-l05c4:  inc     (hl)
-        ld      c,b
-        ld      (hl),00h
-        nop     
-        inc     e
-l05ca:  ld      (223ch),hl
-        ld      (603ch),hl
-        nop     
-        ld      h,b
-        ld      (de),a
-        inc     c
-        inc     d
-        inc     d
-        ex      af,af'
-        nop     
-        nop     
-        inc     e
-        jr      nz,l05f4
-        inc     h
-        inc     h
-        jr      l05e0
-l05e0:  nop     
-        nop     
-        ld      (hl),b
-        ex      af,af'
-        inc     d
-        ld      (0041h),hl
-        nop     
-l05e9:  ld      c,10h
-        ld      e,20h
-        jr      nz,l060d
-        nop     
-        nop     
-        nop     
-        ld      (2a2ah),hl
-        ld      hl,(0014h)
-        nop     
-        ld      a,12h
-        ex      af,af'
-        djnz    l0620
-        ld      a,(hl)
-        nop     
-        nop     
-        inc     e
-        ld      (1422h),hl
-        inc     d
-        ld      (hl),00h
-        nop     
-        ld      (bc),a
-        ld      b,0ah
-        ld      (de),a
-l060d:  ld      (007eh),hl
-        nop     
-        jr      c,l066a
-        inc     d
-        inc     d
-        inc     d
-        inc     h
-        nop     
-        nop     
-        ccf     
-        ld      d,h
-        inc     d
-        inc     d
-        inc     d
-        inc     h
-        nop     
-l0620:  nop     
-        nop     
-        inc     h
-        inc     h
-        inc     h
-        inc     h
-        ld      a,(0060h)
-        nop     
-        inc     e
-        ld      (2e32h),hl
-        jr      nz,l0670
-        inc     c
-        inc     d
-        jr      nz,l0654
-        ld      b,b
-        ld      a,h
-        inc     e
-        nop     
-        ld      b,04h
-        inc     b
-        inc     b
-        inc     b
-        inc     b
-        inc     e
-        nop     
-        jr      l0666
-        ld      b,d
-        ld      a,(hl)
-        ld      b,d
-        inc     h
-        jr      l0648
-l0648:  nop     
-        inc     a
-        ld      b,d
-        ld      a,(hl)
-        ld      b,d
-        inc     a
-        nop     
-        nop     
-        nop     
-        ld      e,10h
-        djnz    l06a5
-        jr      nc,l0667
-        nop     
-        ld      (2854h),hl
-        djnz    l067d
-        ld      d,d
-        dec     l
-        ld      (de),a
-        nop     
-        nop     
-        ld      (hl),49h
-        ld      c,c
-        ld      (hl),00h
-l0667:  nop     
-        nop     
-        inc     h
-l066a:  ld      c,d
-        ld      c,d
-        inc     a
-        ex      af,af'
-        ex      af,af'
-        djnz    l0679
-        ld      hl,(2a2ah)
-        inc     e
-        ex      af,af'
-        inc     e
-        nop     
-        ld      b,04h
-        ld      a,49h
-        ld      a,08h
-        jr      c,l0680
-l0680:  nop     
-        ld      b,d
-        ld      b,d
-        ld      a,(hl)
-        ld      b,d
-        inc     h
-        jr      l0688
-l0688:  ld      a,(hl)
-        ld      (bc),a
-        ld      (bc),a
-        ld      a,(hl)
-        ld      (bc),a
-        ld      (bc),a
-        ld      a,(hl)
-        nop     
-        nop     
-        jr      l06b7
-        jr      l0695
-l0695:  nop     
-        nop     
-        nop     
-        nop     
-        inc     e
-        ld      (2220h),hl
-        inc     e
-        ex      af,af'
-        jr      l06bd
-        jr      nz,l06bb
-        inc     h
-        jr      l06aa
-        jr      c,l06a8
-l06a8:  djnz    l06f2
-l06aa:  jr      nz,l06ac
-l06ac:  nop     
-        nop     
-        nop     
-        nop     
-        ld      (hl),b
-        ld      d,b
-        ld      (hl),b
-        nop     
-        nop     
-        nop     
-        nop     
-l06b7:  nop     
-        rst     38h
-        cp      0fch
-l06bb:  ret     m
+        .db     7Eh                     ; .######.
+        .db     40h                     ; .#......
+        .db     40h                     ; .#......
+        .db     78h                     ; .####...
+        .db     40h                     ; .#......
+        .db     40h                     ; .#......
+        .db     7Eh                     ; .######.
+        .db     00h                     ; ........
 
-        ret     p
+        .db     7Eh                     ; .######.
+        .db     40h                     ; .#......
+        .db     40h                     ; .#......
+        .db     78h                     ; .####...
+        .db     40h                     ; .#......
+        .db     40h                     ; .#......
+        .db     40h                     ; .#......
+        .db     00h                     ; ........
 
-l06bd:  ret     po
+        .db     1Ch                     ; ...###..
+        .db     22h                     ; ..#...#.
+        .db     40h                     ; .#......
+        .db     4Eh                     ; .#..###.
+        .db     42h                     ; .#....#.
+        .db     22h                     ; ..#...#.
+        .db     1Ch                     ; ...###..
+        .db     00h                     ; ........
 
-        ret     nz
+        .db     42h                     ; .#....#.
+        .db     42h                     ; .#....#.
+        .db     42h                     ; .#....#.
+        .db     7Eh                     ; .######.
+        .db     42h                     ; .#....#.
+        .db     42h                     ; .#....#.
+        .db     42h                     ; .#....#.
+        .db     00h                     ; ........
 
-        add     a,b
-        ld      bc,0703h
-        rrca    
-        rra     
-        ccf     
-        ld      a,a
-        rst     38h
-        add     a,b
-        ret     nz
+        .db     1Ch                     ; ...###..
+        .db     08h                     ; ....#...
+        .db     08h                     ; ....#...
+        .db     08h                     ; ....#...
+        .db     08h                     ; ....#...
+        .db     08h                     ; ....#...
+        .db     1Ch                     ; ...###..
+        .db     00h                     ; ........
 
-        ret     po
+        .db     0Eh                     ; ....###.
+        .db     04h                     ; .....#..
+        .db     04h                     ; .....#..
+        .db     04h                     ; .....#..
+        .db     04h                     ; .....#..
+        .db     44h                     ; .#...#..
+        .db     38h                     ; ..###...
+        .db     00h                     ; ........
 
-        ret     p
+        .db     42h                     ; .#....#.
+        .db     44h                     ; .#...#..
+        .db     48h                     ; .#..#...
+        .db     70h                     ; .###....
+        .db     48h                     ; .#..#...
+        .db     44h                     ; .#...#..
+        .db     42h                     ; .#....#.
+        .db     00h                     ; ........
 
-        ret     m
+        .db     40h                     ; .#......
+        .db     40h                     ; .#......
+        .db     40h                     ; .#......
+        .db     40h                     ; .#......
+        .db     40h                     ; .#......
+        .db     40h                     ; .#......
+        .db     7Eh                     ; .######.
+        .db     00h                     ; ........
 
-        call    m,lfffe
-        rst     38h
-        ld      a,a
-        ccf     
-        rra     
-        rrca    
-        rlca    
-        inc     bc
-        ld      bc,1c08h
-        ld      a,7fh
-        ld      a,a
-        inc     e
-        ld      a,00h
-        ld      (hl),7fh
-        ld      a,a
-        ld      a,a
-        ld      a,1ch
-        ex      af,af'
-        nop     
-        ex      af,af'
-        inc     e
-        ld      a,7fh
-        ld      a,1ch
-        ex      af,af'
-        nop     
-        inc     e
-        inc     e
-l06f2:  ld      a,a
-        ld      a,a
-        ld      l,e
-        ex      af,af'
-        ld      a,00h
-        nop     
-        nop     
-        nop     
-        nop     
-        rst     38h
-        nop     
-        nop     
-        nop     
-        ex      af,af'
-        ex      af,af'
-        ex      af,af'
-        ex      af,af'
-        ex      af,af'
-        ex      af,af'
-        ex      af,af'
-        ex      af,af'
-        rst     38h
-        nop     
-        nop     
-        nop     
-        nop     
-        nop     
-        nop     
-        rst     38h
-        add     a,c
-        ld      b,d
-        inc     h
-        jr      l072d
-        inc     h
-        ld      b,d
-        add     a,c
-        rst     38h
-        ld      bc,0101h
-        ld      bc,0101h
-        rst     38h
-        rst     38h
-        add     a,b
-        add     a,b
-        add     a,b
-        add     a,b
-        add     a,b
-        add     a,b
-        rst     38h
-        ld      bc,0402h
-        ex      af,af'
-        djnz    l074e
-        ld      b,b
-        add     a,b
-        add     a,b
-        ld      b,b
-        jr      nz,l0744
-        ex      af,af'
-        inc     b
-        ld      (bc),a
-        ld      bc,80ffh
-        add     a,b
-        add     a,b
-        add     a,b
-        add     a,b
-        add     a,b
-        add     a,b
-        add     a,b
-        add     a,b
-        add     a,b
-        add     a,b
-l0744:  add     a,b
-        add     a,b
-        add     a,b
-        rst     38h
-        rst     38h
-        ld      bc,0101h
-        ld      bc,0101h
-        ld      bc,0101h
-        ld      bc,0101h
-        ld      bc,0ff01h
-        ex      af,af'
-        ex      af,af'
-        ex      af,af'
-        ex      af,af'
-        rst     38h
-        nop     
-        nop     
-        nop     
-        nop     
-        nop     
-        nop     
-        nop     
-        rst     38h
-        ex      af,af'
-        ex      af,af'
-        ex      af,af'
-        ex      af,af'
-        ex      af,af'
-        ex      af,af'
-        ex      af,af'
-        ret     m
+        .db     42h                     ; .#....#.
+        .db     66h                     ; .##..##.
+        .db     5Ah                     ; .#.##.#.
+        .db     5Ah                     ; .#.##.#.
+        .db     42h                     ; .#....#.
+        .db     42h                     ; .#....#.
+        .db     42h                     ; .#....#.
+        .db     00h                     ; ........
 
-        ex      af,af'
-        ex      af,af'
-        ex      af,af'
-        ex      af,af'
-        ex      af,af'
-        ex      af,af'
-        ex      af,af'
-        rrca    
-        ex      af,af'
-        ex      af,af'
-        ex      af,af'
-        ex      af,af'
-        ex      af,af'
-        ex      af,af'
-        ex      af,af'
-        rst     38h
-        ex      af,af'
-        ex      af,af'
-        ex      af,af'
-        nop     
-        jr      l0801
-        jr      l07c1
-        inc     h
-        ld      b,d
-        nop     
-        nop     
-        nop     
-        ld      a,1ch
-        ex      af,af'
-        nop     
-        nop     
-        nop     
-        ex      af,af'
-        ex      af,af'
-        ld      a,08h
-        ex      af,af'
-        nop     
-        ld      a,00h
-        djnz    l07a2
-        inc     b
-        ex      af,af'
-        djnz    l079e
-l079e:  ld      a,00h
-        inc     b
-        ex      af,af'
-l07a2:  djnz    l07ac
-        inc     b
-        nop     
-        ld      a,00h
-        nop     
-        jr      l07ab
-l07ab:  ld      a,(hl)
-l07ac:  nop     
-        jr      l07af
-l07af:  nop     
-        nop     
-        nop     
-        ex      af,af'
-        inc     e
-        ld      a,00h
-        nop     
-        nop     
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-l07c1:  rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        nop     
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
-        rst     38h
+        .db     42h                     ; .#....#.
+        .db     62h                     ; .##...#.
+        .db     52h                     ; .#.#..#.
+        .db     4Ah                     ; .#..#.#.
+        .db     46h                     ; .#...##.
+        .db     42h                     ; .#....#.
+        .db     42h                     ; .#....#.
+        .db     00h                     ; ........
+
+        .db     3Ch                     ; ..####..
+        .db     42h                     ; .#....#.
+        .db     42h                     ; .#....#.
+        .db     42h                     ; .#....#.
+        .db     42h                     ; .#....#.
+        .db     42h                     ; .#....#.
+        .db     3Ch                     ; ..####..
+        .db     00h                     ; ........
+
+        .db     7Ch                     ; .#####..
+        .db     42h                     ; .#....#.
+        .db     42h                     ; .#....#.
+        .db     7Ch                     ; .#####..
+        .db     40h                     ; .#......
+        .db     40h                     ; .#......
+        .db     40h                     ; .#......
+        .db     00h                     ; ........
+
+        .db     18h                     ; ...##...
+        .db     24h                     ; ..#..#..
+        .db     42h                     ; .#....#.
+        .db     42h                     ; .#....#.
+        .db     4Ah                     ; .#..#.#.
+        .db     24h                     ; ..#..#..
+        .db     1Ah                     ; ...##.#.
+        .db     00h                     ; ........
+
+        .db     7Ch                     ; .#####..
+        .db     42h                     ; .#....#.
+        .db     42h                     ; .#....#.
+        .db     7Ch                     ; .#####..
+        .db     48h                     ; .#..#...
+        .db     44h                     ; .#...#..
+        .db     42h                     ; .#....#.
+        .db     00h                     ; ........
+
+        .db     3Ch                     ; ..####..
+        .db     42h                     ; .#....#.
+        .db     40h                     ; .#......
+        .db     3Ch                     ; ..####..
+        .db     02h                     ; ......#.
+        .db     42h                     ; .#....#.
+        .db     3Ch                     ; ..####..
+        .db     00h                     ; ........
+
+        .db     3Eh                     ; ..#####.
+        .db     08h                     ; ....#...
+        .db     08h                     ; ....#...
+        .db     08h                     ; ....#...
+        .db     08h                     ; ....#...
+        .db     08h                     ; ....#...
+        .db     08h                     ; ....#...
+        .db     00h                     ; ........
+
+        .db     42h                     ; .#....#.
+        .db     42h                     ; .#....#.
+        .db     42h                     ; .#....#.
+        .db     42h                     ; .#....#.
+        .db     42h                     ; .#....#.
+        .db     42h                     ; .#....#.
+        .db     3Ch                     ; ..####..
+        .db     00h                     ; ........
+
+        .db     42h                     ; .#....#.
+        .db     42h                     ; .#....#.
+        .db     42h                     ; .#....#.
+        .db     24h                     ; ..#..#..
+        .db     24h                     ; ..#..#..
+        .db     18h                     ; ...##...
+        .db     18h                     ; ...##...
+        .db     00h                     ; ........
+
+        .db     42h                     ; .#....#.
+        .db     42h                     ; .#....#.
+        .db     42h                     ; .#....#.
+        .db     5Ah                     ; .#.##.#.
+        .db     5Ah                     ; .#.##.#.
+        .db     66h                     ; .##..##.
+        .db     42h                     ; .#....#.
+        .db     00h                     ; ........
+
+        .db     42h                     ; .#....#.
+        .db     42h                     ; .#....#.
+        .db     24h                     ; ..#..#..
+        .db     18h                     ; ...##...
+        .db     24h                     ; ..#..#..
+        .db     42h                     ; .#....#.
+        .db     42h                     ; .#....#.
+        .db     00h                     ; ........
+
+        .db     22h                     ; ..#...#.
+        .db     22h                     ; ..#...#.
+        .db     22h                     ; ..#...#.
+        .db     1Ch                     ; ...###..
+        .db     08h                     ; ....#...
+        .db     08h                     ; ....#...
+        .db     08h                     ; ....#...
+        .db     00h                     ; ........
+
+        .db     7Eh                     ; .######.
+        .db     02h                     ; ......#.
+        .db     04h                     ; .....#..
+        .db     18h                     ; ...##...
+        .db     20h                     ; ..#.....
+        .db     40h                     ; .#......
+        .db     7Eh                     ; .######.
+        .db     00h                     ; ........
+
+        .db     3Ch                     ; ..####..
+        .db     20h                     ; ..#.....
+        .db     20h                     ; ..#.....
+        .db     20h                     ; ..#.....
+        .db     20h                     ; ..#.....
+        .db     20h                     ; ..#.....
+        .db     3Ch                     ; ..####..
+        .db     00h                     ; ........
+
+        .db     00h                     ; ........
+        .db     40h                     ; .#......
+        .db     20h                     ; ..#.....
+        .db     10h                     ; ...#....
+        .db     08h                     ; ....#...
+        .db     04h                     ; .....#..
+        .db     02h                     ; ......#.
+        .db     00h                     ; ........
+
+        .db     3Ch                     ; ..####..
+        .db     04h                     ; .....#..
+        .db     04h                     ; .....#..
+        .db     04h                     ; .....#..
+        .db     04h                     ; .....#..
+        .db     04h                     ; .....#..
+        .db     3Ch                     ; ..####..
+        .db     00h                     ; ........
+
+        .db     08h                     ; ....#...
+        .db     14h                     ; ...#.#..
+        .db     22h                     ; ..#...#.
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     7Eh                     ; .######.
+        .db     00h                     ; ........
+
+        .db     10h                     ; ...#....
+        .db     08h                     ; ....#...
+        .db     04h                     ; .....#..
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     3Ch                     ; ..####..
+        .db     04h                     ; .....#..
+        .db     3Ch                     ; ..####..
+        .db     44h                     ; .#...#..
+        .db     3Ah                     ; ..###.#.
+        .db     00h                     ; ........
+
+        .db     40h                     ; .#......
+        .db     40h                     ; .#......
+        .db     5Ch                     ; .#.###..
+        .db     62h                     ; .##...#.
+        .db     42h                     ; .#....#.
+        .db     62h                     ; .##...#.
+        .db     5Ch                     ; .#.###..
+        .db     00h                     ; ........
+
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     3Ch                     ; ..####..
+        .db     42h                     ; .#....#.
+        .db     40h                     ; .#......
+        .db     42h                     ; .#....#.
+        .db     3Ch                     ; ..####..
+        .db     00h                     ; ........
+
+        .db     02h                     ; ......#.
+        .db     02h                     ; ......#.
+        .db     3Ah                     ; ..###.#.
+        .db     46h                     ; .#...##.
+        .db     42h                     ; .#....#.
+        .db     46h                     ; .#...##.
+        .db     3Ah                     ; ..###.#.
+        .db     00h                     ; ........
+
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     3Ch                     ; ..####..
+        .db     42h                     ; .#....#.
+        .db     7Eh                     ; .######.
+        .db     40h                     ; .#......
+        .db     3Ch                     ; ..####..
+        .db     00h                     ; ........
+
+        .db     0Ch                     ; ....##..
+        .db     12h                     ; ...#..#.
+        .db     10h                     ; ...#....
+        .db     7Ch                     ; .#####..
+        .db     10h                     ; ...#....
+        .db     10h                     ; ...#....
+        .db     10h                     ; ...#....
+        .db     00h                     ; ........
+
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     3Ah                     ; ..###.#.
+        .db     46h                     ; .#...##.
+        .db     46h                     ; .#...#..
+        .db     3Ah                     ; ..###.#.
+        .db     02h                     ; ......#.
+        .db     3Ch                     ; ..####..
+
+        .db     40h                     ; .#......
+        .db     40h                     ; .#......
+        .db     5Ch                     ; .#.###..
+        .db     62h                     ; .##...#.
+        .db     42h                     ; .#....#.
+        .db     42h                     ; .#....#.
+        .db     42h                     ; .#....#.
+        .db     00h                     ; ........
+
+        .db     08h                     ; ....#...
+        .db     00h                     ; ........
+        .db     18h                     ; ...##...
+        .db     08h                     ; ....#...
+        .db     08h                     ; ....#...
+        .db     08h                     ; ....#...
+        .db     1Ch                     ; ...###..
+        .db     00h                     ; ........
+
+        .db     04h                     ; .....#..
+        .db     00h                     ; ........
+        .db     0Ch                     ; ....##..
+        .db     04h                     ; .....#..
+        .db     04h                     ; .....#..
+        .db     04h                     ; .....#..
+        .db     44h                     ; .#...#..
+        .db     38h                     ; ..###...
+
+        .db     40h                     ; .#......
+        .db     40h                     ; .#......
+        .db     44h                     ; .#...#..
+        .db     48h                     ; .#..#...
+        .db     50h                     ; .#.#....
+        .db     68h                     ; .##.#...
+        .db     44h                     ; .#...#..
+        .db     00h                     ; ........
+
+        .db     18h                     ; ...##...
+        .db     08h                     ; ....#...
+        .db     08h                     ; ....#...
+        .db     08h                     ; ....#...
+        .db     08h                     ; ....#...
+        .db     08h                     ; ....#...
+        .db     1Ch                     ; ...###..
+        .db     00h                     ; ........
+
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     76h                     ; .###.##.
+        .db     49h                     ; .#..#..#
+        .db     49h                     ; .#..#..#
+        .db     49h                     ; .#..#..#
+        .db     49h                     ; .#..#..#
+        .db     00h                     ; ........
+
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     5Ch                     ; .#.###..
+        .db     62h                     ; .##...#.
+        .db     42h                     ; .#....#.
+        .db     42h                     ; .#....#.
+        .db     42h                     ; .#....#.
+        .db     00h                     ; ........
+
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     3Ch                     ; ..####..
+        .db     42h                     ; .#....#.
+        .db     42h                     ; .#....#.
+        .db     42h                     ; .#....#.
+        .db     3Ch                     ; ..####..
+        .db     00h                     ; ........
+
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     5Ch                     ; .#.###..
+        .db     62h                     ; .##...#.
+        .db     62h                     ; .##...#.
+        .db     5Ch                     ; .#.###..
+        .db     40h                     ; .#......
+        .db     40h                     ; .#......
+
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     3Ah                     ; ..###.#.
+        .db     46h                     ; .#...##.
+        .db     46h                     ; .#...##.
+        .db     3Ah                     ; ..###.#.
+        .db     02h                     ; ......#.
+        .db     02h                     ; ......#.
+
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     5Ch                     ; .#.###..
+        .db     62h                     ; .##...#.
+        .db     40h                     ; .#......
+        .db     40h                     ; .#......
+        .db     40h                     ; .#......
+        .db     00h                     ; ........
+
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     3Eh                     ; ..#####.
+        .db     40h                     ; .#......
+        .db     3Ch                     ; ..####..
+        .db     02h                     ; ......#.
+        .db     7Ch                     ; .#####.
+        .db     00h                     ; ........
+
+        .db     10h                     ; ...#....
+        .db     10h                     ; ...#....
+        .db     7Ch                     ; .#####..
+        .db     10h                     ; ...#....
+        .db     10h                     ; ...#....
+        .db     12h                     ; ...#..#.
+        .db     0Ch                     ; ....##..
+        .db     00h                     ; ........
+
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     42h                     ; .#....#.
+        .db     42h                     ; .#....#.
+        .db     42h                     ; .#....#.
+        .db     46h                     ; .#...##.
+        .db     3Ah                     ; ..###.#.
+        .db     00h                     ; ........
+
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     42h                     ; .#....#.
+        .db     42h                     ; .#....#.
+        .db     42h                     ; .#....#.
+        .db     24h                     ; ..#..#..
+        .db     18h                     ; ...##...
+        .db     00h                     ; ........
+
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     41h                     ; .#.....#
+        .db     49h                     ; .#..#..#
+        .db     49h                     ; .#..#..#
+        .db     49h                     ; .#..#..#
+        .db     36h                     ; ..##.##.
+        .db     00h                     ; ........
+
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     42h                     ; .#....#.
+        .db     24h                     ; ..#..#..
+        .db     18h                     ; ...##...
+        .db     24h                     ; ..#..#..
+        .db     42h                     ; .#....#.
+        .db     00h                     ; ........
+
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     42h                     ; .#....#.
+        .db     42h                     ; .#....#.
+        .db     46h                     ; .#...##.
+        .db     3Ah                     ; ..###.#.
+        .db     02h                     ; ......#.
+        .db     3Ch                     ; ..####..
+
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     7Eh                     ; .######.
+        .db     04h                     ; .....#..
+        .db     18h                     ; ...##...
+        .db     20h                     ; ..#.....
+        .db     7Eh                     ; .######.
+        .db     00h                     ; ........
+
+        .db     0Eh                     ; ....###.
+        .db     10h                     ; ...#....
+        .db     10h                     ; ...#....
+        .db     20h                     ; ..#.....
+        .db     10h                     ; ...#....
+        .db     10h                     ; ...#....
+        .db     0Eh                     ; ....###.
+        .db     00h                     ; ........
+
+        .db     08h                     ; ....#...
+        .db     08h                     ; ....#...
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     08h                     ; ....#...
+        .db     08h                     ; ....#...
+        .db     00h                     ; ........
+
+        .db     70h                     ; .###....
+        .db     08h                     ; ....#...
+        .db     08h                     ; ....#...
+        .db     04h                     ; .....#..
+        .db     08h                     ; ....#...
+        .db     08h                     ; ....#...
+        .db     70h                     ; .###....
+        .db     00h                     ; ........
+
+        .db     30h                     ; ..##....
+        .db     49h                     ; .#..#..#
+        .db     06h                     ; .....##.
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     FFh                     ; ########
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     FFh                     ; ########
+
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     FFh                     ; ########
+        .db     FFh                     ; ########
+
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     FFh                     ; ########
+        .db     FFh                     ; ########
+
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     FFh                     ; ########
+        .db     FFh                     ; ########
+        .db     FFh                     ; ########
+
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     FFh                     ; ########
+        .db     FFh                     ; ########
+        .db     01h                     ; .......#
+        .db     FFh                     ; ########
+
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     FFh                     ; ########
+        .db     FFh                     ; ########
+        .db     FFh                     ; ########
+        .db     FFh                     ; ########
+
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     FFh                     ; ########
+        .db     FFh                     ; ########
+        .db     FFh                     ; ########
+        .db     FFh                     ; ########
+        .db     FFh                     ; ########
+
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     FFh                     ; ########
+        .db     FFh                     ; ########
+        .db     FFh                     ; ########
+        .db     FFh                     ; ########
+        .db     FFh                     ; ########
+        .db     FFh                     ; ########
+
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     FFh                     ; ########
+        .db     FFh                     ; ########
+        .db     FFh                     ; ########
+        .db     FFh                     ; ########
+        .db     FFh                     ; ########
+        .db     FFh                     ; ########
+
+        .db     00h                     ; ........
+        .db     FFh                     ; ########
+        .db     FFh                     ; ########
+        .db     FFh                     ; ########
+        .db     FFh                     ; ########
+        .db     FFh                     ; ########
+        .db     FFh                     ; ########
+        .db     FFh                     ; ########
+
+        .db     FFh                     ; ########
+        .db     FFh                     ; ########
+        .db     FFh                     ; ########
+        .db     FFh                     ; ########
+        .db     FFh                     ; ########
+        .db     FFh                     ; ########
+        .db     FFh                     ; ########
+        .db     FFh                     ; ########
+
+        .db     FFh                     ; ########
+        .db     FFh                     ; ########
+        .db     FFh                     ; ########
+        .db     FFh                     ; ########
+        .db     FFh                     ; ########
+        .db     FFh                     ; ########
+        .db     FFh                     ; ########
+        .db     FFh                     ; ########
+
+        .db     80h                     ; #.......
+        .db     80h                     ; #.......
+        .db     80h                     ; #.......
+        .db     80h                     ; #.......
+        .db     80h                     ; #.......
+        .db     80h                     ; #.......
+        .db     80h                     ; #.......
+        .db     80h                     ; #.......
+
+        .db     C0h                     ; ##......
+        .db     C0h                     ; ##......
+        .db     C0h                     ; ##......
+        .db     C0h                     ; ##......
+        .db     C0h                     ; ##......
+        .db     C0h                     ; ##......
+        .db     C0h                     ; ##......
+        .db     C0h                     ; ##......
+
+        .db     E0h                     ; ###.....
+        .db     E0h                     ; ###.....
+        .db     E0h                     ; ###.....
+        .db     E0h                     ; ###.....
+        .db     E0h                     ; ###.....
+        .db     E0h                     ; ###.....
+        .db     E0h                     ; ###.....
+        .db     E0h                     ; ###.....
+
+        .db     F0h                     ; ####....
+        .db     F0h                     ; ####....
+        .db     F0h                     ; ####....
+        .db     F0h                     ; ####....
+        .db     F0h                     ; ####....
+        .db     F0h                     ; ####....
+        .db     F0h                     ; ####....
+        .db     F0h                     ; ####....
+
+        .db     F8h                     ; #####...
+        .db     F8h                     ; #####...
+        .db     F8h                     ; #####...
+        .db     F8h                     ; #####...
+        .db     F8h                     ; #####...
+        .db     F8h                     ; #####...
+        .db     F8h                     ; #####...
+        .db     F8h                     ; #####...
+
+        .db     FCh                     ; ######..
+        .db     FCh                     ; ######..
+        .db     FCh                     ; ######..
+        .db     FCh                     ; ######..
+        .db     FCh                     ; ######..
+        .db     FCh                     ; ######..
+        .db     FCh                     ; ######..
+        .db     FCh                     ; ######..
+
+        .db     FEh                     ; #######.
+        .db     FEh                     ; #######.
+        .db     FEh                     ; #######.
+        .db     FEh                     ; #######.
+        .db     FEh                     ; #######.
+        .db     FEh                     ; #######.
+        .db     FEh                     ; #######.
+        .db     FEh                     ; #######.
+
+        .db     01h                     ; .......#
+        .db     01h                     ; .......#
+        .db     01h                     ; .......#
+        .db     01h                     ; .......#
+        .db     01h                     ; .......#
+        .db     01h                     ; .......#
+        .db     01h                     ; .......#
+        .db     01h                     ; .......#
+
+        .db     F0h                     ; ####....
+        .db     F0h                     ; ####....
+        .db     0Fh                     ; ....####
+        .db     0Fh                     ; ....####
+        .db     F0h                     ; ####....
+        .db     F0h                     ; ####....
+        .db     0Fh                     ; ....####
+        .db     0Fh                     ; ....####
+
+        .db     CCh                     ; ##..##..
+        .db     33h                     ; ..##..##
+        .db     CCh                     ; ##..##..
+        .db     33h                     ; ..##..##
+        .db     CCh                     ; ##..##..
+        .db     33h                     ; ..##..##
+        .db     CCh                     ; ##..##..
+        .db     33h                     ; ..##..##
+
+        .db     00h                     ; ........
+        .db     3Ch                     ; ..####..
+        .db     7Eh                     ; .######.
+        .db     7Eh                     ; .######.
+        .db     7Eh                     ; .######.
+        .db     7Eh                     ; .######.
+        .db     3Ch                     ; ..####..
+        .db     00h                     ; ........
+
+        .db     00h                     ; ........
+        .db     3Ch                     ; ..####..
+        .db     42h                     ; .#....#.
+        .db     42h                     ; .#....#.
+        .db     42h                     ; .#....#.
+        .db     42h                     ; .#....#.
+        .db     3Ch                     ; ..####..
+        .db     00h                     ; ........
+
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     0Fh                     ; ....####
+        .db     08h                     ; ....#...
+        .db     08h                     ; ....#...
+        .db     08h                     ; ....#...
+
+        .db     08h                     ; ....#...
+        .db     08h                     ; ....#...
+        .db     08h                     ; ....#...
+        .db     08h                     ; ....#...
+        .db     F8h                     ; #####...
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+
+        .db     08h                     ; ....#...
+        .db     08h                     ; ....#...
+        .db     08h                     ; ....#...
+        .db     08h                     ; ....#...
+        .db     0Fh                     ; ....####
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     F8h                     ; #####...
+        .db     08h                     ; ....#...
+        .db     08h                     ; ....#...
+        .db     08h                     ; ....#...
+
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     03h                     ; ......##
+        .db     04h                     ; .....#..
+        .db     08h                     ; ....#...
+        .db     08h                     ; ....#...
+
+        .db     08h                     ; ....#...
+        .db     08h                     ; ....#...
+        .db     08h                     ; ....#...
+        .db     10h                     ; ...#....
+        .db     E0h                     ; ###.....
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+
+        .db     08h                     ; ....#...
+        .db     08h                     ; ....#...
+        .db     08h                     ; ....#...
+        .db     04h                     ; .....#..
+        .db     03h                     ; ......##
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     E0h                     ; ###.....
+        .db     10h                     ; ...#....
+        .db     08h                     ; ....#...
+        .db     08h                     ; ....#...
+
+        .db     00h                     ; ........
+        .db     7Ch                     ; .#####..
+        .db     06h                     ; .....##.
+        .db     3Ah                     ; ..###.#.
+        .db     42h                     ; .#....#.
+        .db     42h                     ; .#....#.
+        .db     3Ch                     ; ..####..
+        .db     00h                     ; ........
+
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     1Ch                     ; ...###..
+        .db     14h                     ; ...#.#..
+        .db     1Ch                     ; ...###..
+        .db     00h                     ; ........
+
+        .db     1Ch                     ; ...###..
+        .db     10h                     ; ...#....
+        .db     10h                     ; ...#....
+        .db     10h                     ; ...#....
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+
+        .db     18h                     ; ...##...
+        .db     24h                     ; ..#..#..
+        .db     20h                     ; ..#.....
+        .db     20h                     ; ..#.....
+        .db     70h                     ; .###....
+        .db     22h                     ; ..#...#.
+        .db     7Ch                     ; .#####.
+        .db     00h                     ; ........
+
+        .db     10h                     ; ...#....
+        .db     28h                     ; ..#.#...
+        .db     78h                     ; .####...
+        .db     04h                     ; .....#..
+        .db     3Ch                     ; ..####..
+        .db     44h                     ; .#...#..
+        .db     3Ah                     ; ..###.#.
+        .db     00h                     ; ........
+
+        .db     00h                     ; ........
+        .db     24h                     ; ..#..#..
+        .db     78h                     ; .####...
+        .db     04h                     ; .....#..
+        .db     3Ch                     ; ..####..
+        .db     44h                     ; .#...#..
+        .db     3Ah                     ; .###.#.
+        .db     00h                     ; ........
+
+        .db     08h                     ; ....#...
+        .db     10h                     ; ...#....
+        .db     78h                     ; .####...
+        .db     04h                     ; .....#..
+        .db     3Ch                     ; ..####..
+        .db     44h                     ; .#...#..
+        .db     3Ah                     ; ..###.#.
+        .db     00h                     ; ........
+
+        .db     32h                     ; ..##..#.
+        .db     4Ch                     ; .#..##..
+        .db     38h                     ; ..###...
+        .db     04h                     ; .....#..
+        .db     3Ch                     ; ..####..
+        .db     44h                     ; .#...#..
+        .db     3Ah                     ; ..###.#.
+        .db     00h                     ; ........
+
+        .db     08h                     ; ....#...
+        .db     14h                     ; ...#.#..
+        .db     1Ch                     ; ...###..
+        .db     22h                     ; ..#...#.
+        .db     3Eh                     ; ..#####.
+        .db     20h                     ; ..#.....
+        .db     1Ch                     ; ...####.
+        .db     00h                     ; ........
+
+        .db     14h                     ; ...#.#..
+        .db     00h                     ; ........
+        .db     1Ch                     ; ...###..
+        .db     22h                     ; ..#...#.
+        .db     3Eh                     ; ..#####.
+        .db     20h                     ; ..#.....
+        .db     1Ch                     ; ...###..
+        .db     00h                     ; ........
+
+        .db     08h                     ; ....#...
+        .db     14h                     ; ...#.#..
+        .db     00h                     ; ........
+        .db     18h                     ; ...##...
+        .db     08h                     ; ....#...
+        .db     08h                     ; ....#...
+        .db     1Ch                     ; ...###..
+        .db     00h                     ; ........
+
+        .db     00h                     ; ........
+        .db     14h                     ; ...#.#..
+        .db     00h                     ; ........
+        .db     18h                     ; ...##...
+        .db     08h                     ; ....#...
+        .db     08h                     ; ....#...
+        .db     1Ch                     ; ...###..
+        .db     00h                     ; ........
+
+        .db     10h                     ; ...#....
+        .db     08h                     ; ....#...
+        .db     00h                     ; ........
+        .db     18h                     ; ...##...
+        .db     08h                     ; ....#...
+        .db     08h                     ; ....#...
+        .db     1Ch                     ; ...###..
+        .db     00h                     ; ........
+
+        .db     08h                     ; ....#...
+        .db     14h                     ; ...#.#..
+        .db     1Ch                     ; ...###..
+        .db     22h                     ; ..#...#.
+        .db     22h                     ; ..#...#>
+        .db     22h                     ; ..#...#.
+        .db     1Ch                     ; ...###..
+        .db     00h                     ; ........
+
+        .db     14h                     ; ...#.#..
+        .db     00h                     ; ........
+        .db     1Ch                     ; ...###..
+        .db     22h                     ; ..#...#.
+        .db     22h                     ; ..#...#.
+        .db     22h                     ; ..#...#.
+        .db     1Ch                     ; ...###..
+        .db     00h                     ; ........
+
+        .db     08h                     ; ....#...
+        .db     04h                     ; .....#..
+        .db     1Ch                     ; ...###..
+        .db     22h                     ; ..#...#.
+        .db     22h                     ; ..#...#.
+        .db     22h                     ; ..#...#.
+        .db     1Ch                     ; ...###..
+        .db     00h                     ; ........
+
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     3Eh                     ; ..#####.
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+        .db     60h                     ; .##.....
+        .db     10h                     ; ...#....
+        .db     08h                     ; ....#...
+        .db     06h                     ; .....##.
+        .db     00h                     ; ........
+        .db     00h                     ; ........
+
+        .db     08h                     ; ....#...
+        .db     14h                     ; ...#.#..
+        .db     00h                     ; ........
+        .db     22h                     ; ..#...#.
+        .db     22h                     ; ..#...#.
+        .db     24h                     ; ..#..#..
+        .db     1Ah                     ; ...##.#.
+        .db     00h                     ; ........
+
+        .db     00h                     ; ........
+        .db     14h                     ; ...#.#..
+        .db     00h                     ; ........
+        .db     22h                     ; ..#...#.
+        .db     22h                     ; ..#...#.
+        .db     24h                     ; ..#..#..
+        .db     1Ah                     ; ...##.#.
+        .db     00h                     ; ........
+
+        .db     08h                     ; 
+        .db     04h                     ; 
+        .db     00h                     ; 
+        .db     22h                     ; 
+        .db     22h                     ; 
+        .db     24h                     ; 
+        .db     1Ah                     ; 
+        .db     00h                     ; 
+
+        .db     24h                     ; 
+        .db     00h                     ; 
+        .db     18h                     ; 
+        .db     24h                     ; 
+        .db     42h                     ; 
+        .db     7Eh                     ; 
+        .db     42h                     ; 
+        .db     00h                     ; 
+
+        .db     08h                     ; 
+        .db     10h                     ; 
+        .db     7Eh                     ; 
+        .db     40h                     ; 
+        .db     7Ch                     ; 
+        .db     40h                     ; 
+        .db     7Eh                     ; 
+        .db     00h                     ; 
+
+        .db     24h                     ; 
+        .db     00h                     ; 
+        .db     3Ch                     ; 
+        .db     42h                     ; 
+        .db     42h                     ; 
+        .db     42h                     ; 
+        .db     3Ch                     ; 
+        .db     00h                     ; 
+
+        .db     24h                     ; 
+        .db     00h                     ; 
+        .db     42h                     ; 
+        .db     42h                     ; 
+        .db     42h                     ; 
+        .db     42h                     ; 
+        .db     3Ch                     ; 
+        .db     00h                     ; 
+
+        .db     32h                     ; 
+        .db     4Ch                     ; 
+        .db     18h                     ; 
+        .db     24h                     ; 
+        .db     42h                     ; 
+        .db     7Eh                     ; 
+        .db     42h                     ; 
+        .db     00h                     ; 
+
+        .db     32h                     ; 
+        .db     4Ch                     ; 
+        .db     00h                     ; 
+        .db     5Ch                     ; 
+        .db     62h                     ; 
+        .db     42h                     ; 
+        .db     42h                     ; 
+        .db     00h                     ; 
+
+        .db     32h                     ; 
+        .db     4Ch                     ; 
+        .db     22h                     ; 
+        .db     32h                     ; 
+        .db     2Ah                     ; 
+        .db     26h                     ; 
+        .db     22h                     ; 
+        .db     00h                     ; 
+
+        .db     18h                     ; 
+        .db     24h                     ; 
+        .db     18h                     ; 
+        .db     24h                     ; 
+        .db     42h                     ; 
+        .db     7Eh                     ; 
+        .db     42h                     ; 
+        .db     00h                     ; 
+
+        .db     00h                     ; 
+        .db     1Eh                     ; 
+        .db     20h                     ; 
+        .db     7Eh                     ; 
+        .db     20h                     ; 
+        .db     1Eh                     ; 
+        .db     00h                     ; 
+        .db     00h                     ; 
+
+        .db     00h                     ; 
+        .db     32h                     ; 
+        .db     4Ch                     ; 
+        .db     00h                     ; 
+        .db     32h                     ; 
+        .db     4Ch                     ; 
+        .db     00h                     ; 
+        .db     00h                     ; 
+
+        .db     00h                     ; 
+        .db     00h                     ; 
+        .db     02h                     ; 
+        .db     7Fh                     ; 
+        .db     08h                     ; 
+        .db     7Fh                     ; 
+        .db     20h                     ; 
+        .db     00h                     ; 
+
+        .db     20h                     ; 
+        .db     10h                     ; 
+        .db     78h                     ; 
+        .db     04h                     ; 
+        .db     3Ch                     ; 
+        .db     FFh                     ; 
+        .db     3Ah                     ; 
+        .db     00h                     ; 
+
+        .db     00h                     ; 
+        .db     00h                     ; 
+        .db     02h                     ; 
+        .db     02h                     ; 
+        .db     34h                     ; 
+        .db     48h                     ; 
+        .db     36h                     ; 
+        .db     00h                     ; 
+
+        .db     00h                     ; 
+        .db     1Ch                     ; 
+        .db     22h                     ; 
+        .db     3Ch                     ; 
+        .db     22h                     ; 
+        .db     22h                     ; 
+        .db     3Ch                     ; 
+        .db     60h                     ; 
+
+        .db     00h                     ; 
+        .db     60h                     ; 
+        .db     12h                     ; 
+        .db     0Ch                     ; 
+        .db     14h                     ; 
+        .db     14h                     ; 
+        .db     08h                     ; 
+        .db     00h                     ; 
+
+        .db     00h                     ; 
+        .db     1Ch                     ; 
+        .db     20h                     ; 
+        .db     18h                     ; 
+        .db     24h                     ; 
+        .db     24h                     ; 
+        .db     18h                     ; 
+        .db     00h                     ; 
+
+        .db     00h                     ; 
+        .db     00h                     ; 
+        .db     70h                     ; 
+        .db     08h                     ; 
+        .db     14h                     ; 
+        .db     22h                     ; 
+        .db     41h                     ; 
+        .db     00h                     ; 
+
+        .db     00h                     ; 
+        .db     0Eh                     ; 
+        .db     10h                     ; 
+        .db     1Eh                     ; 
+        .db     20h                     ; 
+        .db     20h                     ; 
+        .db     1Eh                     ; 
+        .db     00h                     ; 
+
+        .db     00h                     ; 
+        .db     00h                     ; 
+        .db     22h                     ; 
+        .db     2Ah                     ; 
+        .db     2Ah                     ; 
+        .db     2Ah                     ; 
+        .db     14h                     ; 
+        .db     00h                     ; 
+
+        .db     00h                     ; 
+        .db     3Eh                     ; 
+        .db     12h                     ; 
+        .db     08h                     ; 
+        .db     10h                     ; 
+        .db     22h                     ; 
+        .db     7Eh                     ; 
+        .db     00h                     ; 
+
+        .db     00h                     ; 
+        .db     1Ch                     ; 
+        .db     22h                     ; 
+        .db     22h                     ; 
+        .db     14h                     ; 
+        .db     14h                     ; 
+        .db     36h                     ; 
+        .db     00h                     ; 
+
+        .db     00h                     ; 
+        .db     02h                     ; 
+        .db     06h                     ; 
+        .db     0Ah                     ; 
+        .db     12h                     ; 
+        .db     22h                     ; 
+        .db     7Eh                     ; 
+        .db     00h                     ; 
+
+        .db     00h                     ; 
+        .db     38h                     ; 
+        .db     57h                     ; 
+        .db     14h                     ; 
+        .db     14h                     ; 
+        .db     14h                     ; 
+        .db     24h                     ; 
+        .db     00h                     ; 
+
+        .db     00h                     ; 
+        .db     3Fh                     ; 
+        .db     54h                     ; 
+        .db     14h                     ; 
+        .db     14h                     ; 
+        .db     14h                     ; 
+        .db     24h                     ; 
+        .db     00h                     ; 
+
+        .db     00h                     ; 
+        .db     00h                     ; 
+        .db     24h                     ; 
+        .db     24h                     ; 
+        .db     24h                     ; 
+        .db     24h                     ; 
+        .db     3Ah                     ; 
+        .db     60h                     ; 
+
+        .db     00h                     ; 
+        .db     00h                     ; 
+        .db     1Ch                     ; 
+        .db     22h                     ; 
+        .db     32h                     ; 
+        .db     2Eh                     ; 
+        .db     20h                     ; 
+        .db     40h                     ; 
+
+        .db     0Ch                     ; 
+        .db     14h                     ; 
+        .db     20h                     ; 
+        .db     20h                     ; 
+        .db     40h                     ; 
+        .db     7Ch                     ; 
+        .db     1Ch                     ; 
+        .db     00h                     ; 
+
+        .db     06h                     ; 
+        .db     04h                     ; 
+        .db     04h                     ; 
+        .db     04h                     ; 
+        .db     04h                     ; 
+        .db     04h                     ; 
+        .db     1Ch                     ; 
+        .db     00h                     ; 
+
+        .db     18h                     ; 
+        .db     24h                     ; 
+        .db     42h                     ; 
+        .db     7Eh                     ; 
+        .db     42h                     ; 
+        .db     24h                     ; 
+        .db     18h                     ; 
+        .db     00h                     ; 
+
+        .db     00h                     ; 
+        .db     3Ch                     ; 
+        .db     42h                     ; 
+        .db     7Eh                     ; 
+        .db     42h                     ; 
+        .db     3Ch                     ; 
+        .db     00h                     ; 
+        .db     00h                     ; 
+
+        .db     00h                     ; 
+        .db     1Eh                     ; 
+        .db     10h                     ; 
+        .db     10h                     ; 
+        .db     50h                     ; 
+        .db     30h                     ; 
+        .db     10h                     ; 
+        .db     00h                     ; 
+
+        .db     22h                     ; 
+        .db     54h                     ; 
+        .db     28h                     ; 
+        .db     10h                     ; 
+        .db     20h                     ; 
+        .db     52h                     ; 
+        .db     2Dh                     ; 
+        .db     12h                     ; 
+
+        .db     00h                     ; 
+        .db     00h                     ; 
+        .db     36h                     ; 
+        .db     49h                     ; 
+        .db     49h                     ; 
+        .db     36h                     ; 
+        .db     00h                     ; 
+        .db     00h                     ; 
+
+        .db     00h                     ; 
+        .db     24h                     ; 
+        .db     4Ah                     ; 
+        .db     4Ah                     ; 
+        .db     3Ch                     ; 
+        .db     08h                     ; 
+        .db     08h                     ; 
+        .db     10h                     ; 
+
+        .db     08h                     ; 
+        .db     2Ah                     ; 
+        .db     2Ah                     ; 
+        .db     2Ah                     ; 
+        .db     1Ch                     ; 
+        .db     08h                     ; 
+        .db     1Ch                     ; 
+        .db     00h                     ; 
+
+        .db     06h                     ; 
+        .db     04h                     ; 
+        .db     3Eh                     ; 
+        .db     49h                     ; 
+        .db     3Eh                     ; 
+        .db     08h                     ; 
+        .db     38h                     ; 
+        .db     00h                     ; 
+
+        .db     00h                     ; 
+        .db     42h                     ; 
+        .db     42h                     ; 
+        .db     7Eh                     ; 
+        .db     42h                     ; 
+        .db     24h                     ; 
+        .db     18h                     ; 
+        .db     00h                     ; 
+
+        .db     7Eh                     ; 
+        .db     02h                     ; 
+        .db     02h                     ; 
+        .db     7Eh                     ; 
+        .db     02h                     ; 
+        .db     02h                     ; 
+        .db     7Eh                     ; 
+        .db     00h                     ; 
+
+        .db     00h                     ; 
+        .db     18h                     ; 
+        .db     24h                     ; 
+        .db     18h                     ; 
+        .db     00h                     ; 
+        .db     00h                     ; 
+        .db     00h                     ; 
+        .db     00h                     ; 
+
+        .db     00h                     ; 
+        .db     1Ch                     ; 
+        .db     22h                     ; 
+        .db     20h                     ; 
+        .db     22h                     ; 
+        .db     1Ch                     ; 
+        .db     08h                     ; 
+        .db     18h                     ; 
+
+        .db     1Ch                     ; 
+        .db     20h                     ; 
+        .db     18h                     ; 
+        .db     24h                     ; 
+        .db     18h                     ; 
+        .db     04h                     ; 
+        .db     38h                     ; 
+        .db     00h                     ; 
+
+        .db     10h                     ; 
+        .db     48h                     ; 
+        .db     20h                     ; 
+        .db     00h                     ; 
+        .db     00h                     ; 
+        .db     00h                     ; 
+        .db     00h                     ; 
+        .db     00h                     ; 
+
+        .db     70h                     ; 
+        .db     50h                     ; 
+        .db     70h                     ; 
+        .db     00h                     ; 
+        .db     00h                     ; 
+        .db     00h                     ; 
+        .db     00h                     ; 
+        .db     00h                     ; 
+
+        .db     FFh                     ; 
+        .db     FEh                     ; 
+        .db     FCh                     ; 
+        .db     F8h                     ; 
+        .db     F0h                     ; 
+        .db     E0h                     ; 
+        .db     C0h                     ; 
+        .db     80h                     ; 
+
+        .db     01h                     ; 
+        .db     03h                     ; 
+        .db     07h                     ; 
+        .db     0Fh                     ; 
+        .db     1Fh                     ; 
+        .db     3Fh                     ; 
+        .db     7Fh                     ; 
+        .db     FFh                     ; 
+
+        .db     80h                     ; 
+        .db     C0h                     ; 
+        .db     E0h                     ; 
+        .db     F0h                     ; 
+        .db     F8h                     ; 
+        .db     FCh                     ; 
+        .db     FEh                     ; 
+        .db     FFh                     ; 
+
+        .db     FFh                     ; 
+        .db     7Fh                     ; 
+        .db     3Fh                     ; 
+        .db     1Fh                     ; 
+        .db     0Fh                     ; 
+        .db     07h                     ; 
+        .db     03h                     ; 
+        .db     01h                     ; 
+
+        .db     08h                     ; 
+        .db     1Ch                     ; 
+        .db     3Eh                     ; 
+        .db     7Fh                     ; 
+        .db     7Fh                     ; 
+        .db     1Ch                     ; 
+        .db     3Eh                     ; 
+        .db     00h                     ; 
+
+        .db     36h                     ; 
+        .db     7Fh                     ; 
+        .db     7Fh                     ; 
+        .db     7Fh                     ; 
+        .db     3Eh                     ; 
+        .db     1Ch                     ; 
+        .db     08h                     ; 
+        .db     00h                     ; 
+
+        .db     08h                     ; 
+        .db     1Ch                     ; 
+        .db     3Eh                     ; 
+        .db     7Fh                     ; 
+        .db     3Eh                     ; 
+        .db     1Ch                     ; 
+        .db     08h                     ; 
+        .db     00h                     ; 
+
+        .db     1Ch                     ; 
+        .db     1Ch                     ; 
+        .db     7Fh                     ; 
+        .db     7Fh                     ; 
+        .db     6Bh                     ; 
+        .db     08h                     ; 
+        .db     3Eh                     ; 
+        .db     00h                     ; 
+
+        .db     00h                     ; 
+        .db     00h                     ; 
+        .db     00h                     ; 
+        .db     00h                     ; 
+        .db     FFh                     ; 
+        .db     00h                     ; 
+        .db     00h                     ; 
+        .db     00h                     ; 
+
+        .db     08h                     ; 
+        .db     08h                     ; 
+        .db     08h                     ; 
+        .db     08h                     ; 
+        .db     08h                     ; 
+        .db     08h                     ; 
+        .db     08h                     ; 
+        .db     08h                     ; 
+
+        .db     FFh                     ; 
+        .db     00h                     ; 
+        .db     00h                     ; 
+        .db     00h                     ; 
+        .db     00h                     ; 
+        .db     00h                     ; 
+        .db     00h                     ; 
+        .db     FFh                     ; 
+
+        .db     81h                     ; 
+        .db     42h                     ; 
+        .db     24h                     ; 
+        .db     18h                     ; 
+        .db     18h                     ; 
+        .db     24h                     ; 
+        .db     42h                     ; 
+        .db     81h                     ; 
+
+        .db     FFh                     ; 
+        .db     01h                     ; 
+        .db     01h                     ; 
+        .db     01h                     ; 
+        .db     01h                     ; 
+        .db     01h                     ; 
+        .db     01h                     ; 
+        .db     FFh                     ; 
+
+        .db     FFh                     ; 
+        .db     80h                     ; 
+        .db     80h                     ; 
+        .db     80h                     ; 
+        .db     80h                     ; 
+        .db     80h                     ; 
+        .db     80h                     ; 
+        .db     FFh                     ; 
+
+        .db     01h                     ; 
+        .db     02h                     ; 
+        .db     04h                     ; 
+        .db     08h                     ; 
+        .db     10h                     ; 
+        .db     20h                     ; 
+        .db     40h                     ; 
+        .db     80h                     ; 
+
+        .db     80h                     ; 
+        .db     40h                     ; 
+        .db     20h                     ; 
+        .db     10h                     ; 
+        .db     08h                     ; 
+        .db     04h                     ; 
+        .db     02h                     ; 
+        .db     01h                     ; 
+
+        .db     FFh                     ; 
+        .db     80h                     ; 
+        .db     80h                     ; 
+        .db     80h                     ; 
+        .db     80h                     ; 
+        .db     80h                     ; 
+        .db     80h                     ; 
+        .db     80h                     ; 
+
+        .db     80h                     ; 
+        .db     80h                     ; 
+        .db     80h                     ; 
+        .db     80h                     ; 
+        .db     80h                     ; 
+        .db     80h                     ; 
+        .db     80h                     ; 
+        .db     FFh                     ; 
+
+        .db     FFh                     ; 
+        .db     01h                     ; 
+        .db     01h                     ; 
+        .db     01h                     ; 
+        .db     01h                     ; 
+        .db     01h                     ; 
+        .db     01h                     ; 
+        .db     01h                     ; 
+
+        .db     01h                     ; 
+        .db     01h                     ; 
+        .db     01h                     ; 
+        .db     01h                     ; 
+        .db     01h                     ; 
+        .db     01h                     ; 
+        .db     01h                     ; 
+        .db     FFh                     ; 
+
+        .db     08h                     ; 
+        .db     08h                     ; 
+        .db     08h                     ; 
+        .db     08h                     ; 
+        .db     FFh                     ; 
+        .db     00h                     ; 
+        .db     00h                     ; 
+        .db     00h                     ; 
+
+        .db     00h                     ; 
+        .db     00h                     ; 
+        .db     00h                     ; 
+        .db     00h                     ; 
+        .db     FFh                     ; 
+        .db     08h                     ; 
+        .db     08h                     ; 
+        .db     08h                     ; 
+
+        .db     08h                     ; 
+        .db     08h                     ; 
+        .db     08h                     ; 
+        .db     08h                     ; 
+        .db     F8h                     ; 
+        .db     08h                     ; 
+        .db     08h                     ; 
+        .db     08h                     ; 
+
+        .db     08h                     ; 
+        .db     08h                     ; 
+        .db     08h                     ; 
+        .db     08h                     ; 
+        .db     0Fh                     ; 
+        .db     08h                     ; 
+        .db     08h                     ; 
+        .db     08h                     ; 
+
+        .db     08h                     ; 
+        .db     08h                     ; 
+        .db     08h                     ; 
+        .db     08h                     ; 
+        .db     FFh                     ; 
+        .db     08h                     ; 
+        .db     08h                     ; 
+        .db     08h                     ; 
+
+        .db     00h                     ; 
+        .db     18h                     ; 
+        .db     7Eh                     ; 
+        .db     18h                     ; 
+        .db     3Ch                     ; 
+        .db     24h                     ; 
+        .db     42h                     ; 
+        .db     00h                     ; 
+
+        .db     00h                     ; 
+        .db     00h                     ; 
+        .db     3Eh                     ; 
+        .db     1Ch                     ; 
+        .db     08h                     ; 
+        .db     00h                     ; 
+        .db     00h                     ; 
+        .db     00h                     ; 
+
+        .db     08h                     ; 
+        .db     08h                     ; 
+        .db     3Eh                     ; 
+        .db     08h                     ; 
+        .db     08h                     ; 
+        .db     00h                     ; 
+        .db     3Eh                     ; 
+        .db     00h                     ; 
+
+        .db     10h                     ; 
+        .db     08h                     ; 
+        .db     04h                     ; 
+        .db     08h                     ; 
+        .db     10h                     ; 
+        .db     00h                     ; 
+        .db     3Eh                     ; 
+        .db     00h                     ; 
+
+        .db     04h                     ; 
+        .db     08h                     ; 
+        .db     10h                     ; 
+        .db     08h                     ; 
+        .db     04h                     ; 
+        .db     00h                     ; 
+        .db     3Eh                     ; 
+        .db     00h                     ; 
+
+        .db     00h                     ; 
+        .db     18h                     ; 
+        .db     00h                     ; 
+        .db     7Eh                     ; 
+        .db     00h                     ; 
+        .db     18h                     ; 
+        .db     00h                     ; 
+        .db     00h                     ; 
+
+        .db     00h                     ; 
+        .db     00h                     ; 
+        .db     08h                     ; 
+        .db     1Ch                     ; 
+        .db     3Eh                     ; 
+        .db     00h                     ; 
+        .db     00h                     ; 
+        .db     00h                     ; 
+
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     00h                     ; 
+
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh                     ; 
+        .db     FFh
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
