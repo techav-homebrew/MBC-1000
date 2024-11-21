@@ -19,7 +19,7 @@ Reverse-engineering notes &amp; documentation of the Sanyo MBC-1000 computer
 | :--- | :---: |
 | `$0000 - $ffff` | RAM |
 
-### I/O Memory Space Map
+### I/O Space Map
 
 | Address | Function | IC |
 | :--- | :--- | :--- |
@@ -29,6 +29,8 @@ Reverse-engineering notes &amp; documentation of the Sanyo MBC-1000 computer
 | `$EC` | CRT Controller | HD46505SP-2 (68B45) |
 | `$F0 - $F4` | Character Generator | -- |
 | `$F8 - $FC` | Video RAM for Screen | -- |
+
+A disassembled BIOS has IO calls to devices in the `$C0 - $C4` range in some of the disk read & write functions. The motherboard IO devices are decoded by a 74LS138 enabled when A7, A6, and A5 are all high, so a device on `$C0` would not be selected by that chip. The serial expansion card can only be configured at `$A0`, `$A8`, `$B0`, or `$B8`, so it's not what is being addressed here either. The manual only references the on-board peripherals in the `$E0 - $F0` range. So far I have not been able to trace out anything on the motherboard that would be selected for IO addresses `$C0 - $C4`
 
 #### I/O Device Registers
 

@@ -15,340 +15,264 @@ ram:ram:ee1e    c3a6f1          JP          biosSETTRK                          
 ram:ram:ee21    c3abf1          JP          biosSETSEC                              ;void biosSETSEC(word sector)
 ram:ram:ee24    c3bcf1          JP          biosSETDMA                              ;void biosSETDMA(void * ptrBuffer)
 ram:ram:ee27    c3c1f1          JP          biosREAD                                ;char biosREAD(void)
-ram:ram:ee2a    c3b1f2          JP          biosWRITE                               ;char biosWRITE(char blocking)
+ram:ram:ee2a    c3b1f2          JP          biosWRITE                               ;char biosWRITE(char paramA)
 ram:ram:ee2d    c32ef1          JP          biosLISTST                              ;undefined biosLISTST()
 ram:ram:ee30    c3b0f1          JP          biosSECTRAN                             ;word biosSECTRAN(word sector, word *...
                             ;************************************************************************************************
-                            ;*  Unknown                                                                                     *
-                            ;*  ... is this data or code?                                                                   *
+                            ;*  Disk Parameter Header (DPH) memory region                                                   *
+                            ;*  DPH is system-specific                                                                      *
+                            ;*  Here each DPH entry is 16 bytes                                                             *
+                            ;*  https://www.seasip.info/Cpm/dph.html                                                        *
                             ;************************************************************************************************
-ram:ram:ee33    13              ??          13h                                     
-ram:ram:ee34    ef              ??          EFh                                     
-ram:ram:ee35    00              ??          00h                                     
-ram:ram:ee36    00              ??          00h                                     
-ram:ram:ee37    00              ??          00h                                     
-ram:ram:ee38    00              ??          00h                                     
-ram:ram:ee39    00              ??          00h                                     
-ram:ram:ee3a    00              ??          00h                                     
-ram:ram:ee3b    65              ??          65h    e                                
-ram:ram:ee3c    f9              ??          F9h                                     
-ram:ram:ee3d    4d              ??          4Dh    M                                
-ram:ram:ee3e    ef              ??          EFh                                     
-ram:ram:ee3f    65              ??          65h    e                                
-ram:ram:ee40    f8              ??          F8h                                     
-ram:ram:ee41    b1              ??          B1h                                     
-ram:ram:ee42    f6              ??          F6h                                     
-ram:ram:ee43    13              ??          13h                                     
-ram:ram:ee44    ef              ??          EFh                                     
-ram:ram:ee45    00              ??          00h                                     
-ram:ram:ee46    00              ??          00h                                     
-ram:ram:ee47    00              ??          00h                                     
-ram:ram:ee48    00              ??          00h                                     
-ram:ram:ee49    00              ??          00h                                     
-ram:ram:ee4a    00              ??          00h                                     
-ram:ram:ee4b    65              ??          65h    e                                
-ram:ram:ee4c    f9              ??          F9h                                     
-ram:ram:ee4d    4d              ??          4Dh    M                                
-ram:ram:ee4e    ef              ??          EFh                                     
-ram:ram:ee4f    75              ??          75h    u                                
-ram:ram:ee50    f8              ??          F8h                                     
-ram:ram:ee51    c5              ??          C5h                                     
-ram:ram:ee52    f6              ??          F6h                                     
-ram:ram:ee53    13              ??          13h                                     
-ram:ram:ee54    ef              ??          EFh                                     
-ram:ram:ee55    00              ??          00h                                     
-ram:ram:ee56    00              ??          00h                                     
-ram:ram:ee57    00              ??          00h                                     
-ram:ram:ee58    00              ??          00h                                     
-ram:ram:ee59    00              ??          00h                                     
-ram:ram:ee5a    00              ??          00h                                     
-ram:ram:ee5b    65              ??          65h    e                                
-ram:ram:ee5c    f9              ??          F9h                                     
-ram:ram:ee5d    4d              ??          4Dh    M                                
-ram:ram:ee5e    ef              ??          EFh                                     
-ram:ram:ee5f    85              ??          85h                                     
-ram:ram:ee60    f8              ??          F8h                                     
-ram:ram:ee61    d9              ??          D9h                                     
-ram:ram:ee62    f6              ??          F6h                                     
-ram:ram:ee63    13              ??          13h                                     
-ram:ram:ee64    ef              ??          EFh                                     
-ram:ram:ee65    00              ??          00h                                     
-ram:ram:ee66    00              ??          00h                                     
-ram:ram:ee67    00              ??          00h                                     
-ram:ram:ee68    00              ??          00h                                     
-ram:ram:ee69    00              ??          00h                                     
-ram:ram:ee6a    00              ??          00h                                     
-ram:ram:ee6b    65              ??          65h    e                                
-ram:ram:ee6c    f9              ??          F9h                                     
-ram:ram:ee6d    4d              ??          4Dh    M                                
-ram:ram:ee6e    ef              ??          EFh                                     
-ram:ram:ee6f    95              ??          95h                                     
-ram:ram:ee70    f8              ??          F8h                                     
-ram:ram:ee71    ed              ??          EDh                                     
-ram:ram:ee72    f6              ??          F6h                                     
-ram:ram:ee73    13              ??          13h                                     
-ram:ram:ee74    ef              ??          EFh                                     
-ram:ram:ee75    00              ??          00h                                     
-ram:ram:ee76    00              ??          00h                                     
-ram:ram:ee77    00              ??          00h                                     
-ram:ram:ee78    00              ??          00h                                     
-ram:ram:ee79    00              ??          00h                                     
-ram:ram:ee7a    00              ??          00h                                     
-ram:ram:ee7b    65              ??          65h    e                                
-ram:ram:ee7c    f9              ??          F9h                                     
-ram:ram:ee7d    4d              ??          4Dh    M                                
-ram:ram:ee7e    ef              ??          EFh                                     
-ram:ram:ee7f    a5              ??          A5h                                     
-ram:ram:ee80    f8              ??          F8h                                     
-ram:ram:ee81    01              ??          01h                                     
-ram:ram:ee82    f7              ??          F7h                                     
-ram:ram:ee83    13              ??          13h                                     
-ram:ram:ee84    ef              ??          EFh                                     
-ram:ram:ee85    00              ??          00h                                     
-ram:ram:ee86    00              ??          00h                                     
-ram:ram:ee87    00              ??          00h                                     
-ram:ram:ee88    00              ??          00h                                     
-ram:ram:ee89    00              ??          00h                                     
-ram:ram:ee8a    00              ??          00h                                     
-ram:ram:ee8b    65              ??          65h    e                                
-ram:ram:ee8c    f9              ??          F9h                                     
-ram:ram:ee8d    4d              ??          4Dh    M                                
-ram:ram:ee8e    ef              ??          EFh                                     
-ram:ram:ee8f    b5              ??          B5h                                     
-ram:ram:ee90    f8              ??          F8h                                     
-ram:ram:ee91    15              ??          15h                                     
-ram:ram:ee92    f7              ??          F7h                                     
-ram:ram:ee93    13              ??          13h                                     
-ram:ram:ee94    ef              ??          EFh                                     
-ram:ram:ee95    00              ??          00h                                     
-ram:ram:ee96    00              ??          00h                                     
-ram:ram:ee97    00              ??          00h                                     
-ram:ram:ee98    00              ??          00h                                     
-ram:ram:ee99    00              ??          00h                                     
-ram:ram:ee9a    00              ??          00h                                     
-ram:ram:ee9b    65              ??          65h    e                                
-ram:ram:ee9c    f9              ??          F9h                                     
-ram:ram:ee9d    4d              ??          4Dh    M                                
-ram:ram:ee9e    ef              ??          EFh                                     
-ram:ram:ee9f    c5              ??          C5h                                     
-ram:ram:eea0    f8              ??          F8h                                     
-ram:ram:eea1    29              ??          29h    )                                
-ram:ram:eea2    f7              ??          F7h                                     
-ram:ram:eea3    13              ??          13h                                     
-ram:ram:eea4    ef              ??          EFh                                     
-ram:ram:eea5    00              ??          00h                                     
-ram:ram:eea6    00              ??          00h                                     
-ram:ram:eea7    00              ??          00h                                     
-ram:ram:eea8    00              ??          00h                                     
-ram:ram:eea9    00              ??          00h                                     
-ram:ram:eeaa    00              ??          00h                                     
-ram:ram:eeab    65              ??          65h    e                                
-ram:ram:eeac    f9              ??          F9h                                     
-ram:ram:eead    4d              ??          4Dh    M                                
-ram:ram:eeae    ef              ??          EFh                                     
-ram:ram:eeaf    d5              ??          D5h                                     
-ram:ram:eeb0    f8              ??          F8h                                     
-ram:ram:eeb1    3d              ??          3Dh    =                                
-ram:ram:eeb2    f7              ??          F7h                                     
-ram:ram:eeb3    33              ??          33h    3                                
-ram:ram:eeb4    ef              ??          EFh                                     
-ram:ram:eeb5    00              ??          00h                                     
-ram:ram:eeb6    00              ??          00h                                     
-ram:ram:eeb7    00              ??          00h                                     
-ram:ram:eeb8    00              ??          00h                                     
-ram:ram:eeb9    00              ??          00h                                     
-ram:ram:eeba    00              ??          00h                                     
-ram:ram:eebb    65              ??          65h    e                                
-ram:ram:eebc    f9              ??          F9h                                     
-ram:ram:eebd    5c              ??          5Ch    \                                
-ram:ram:eebe    ef              ??          EFh                                     
-ram:ram:eebf    e5              ??          E5h                                     
-ram:ram:eec0    f8              ??          F8h                                     
-ram:ram:eec1    51              ??          51h    Q                                
-ram:ram:eec2    f7              ??          F7h                                     
-ram:ram:eec3    33              ??          33h    3                                
-ram:ram:eec4    ef              ??          EFh                                     
-ram:ram:eec5    00              ??          00h                                     
-ram:ram:eec6    00              ??          00h                                     
-ram:ram:eec7    00              ??          00h                                     
-ram:ram:eec8    00              ??          00h                                     
-ram:ram:eec9    00              ??          00h                                     
-ram:ram:eeca    00              ??          00h                                     
-ram:ram:eecb    65              ??          65h    e                                
-ram:ram:eecc    f9              ??          F9h                                     
-ram:ram:eecd    5c              ??          5Ch    \                                
-ram:ram:eece    ef              ??          EFh                                     
-ram:ram:eecf    f5              ??          F5h                                     
-ram:ram:eed0    f8              ??          F8h                                     
-ram:ram:eed1    70              ??          70h    p                                
-ram:ram:eed2    f7              ??          F7h                                     
-ram:ram:eed3    33              ??          33h    3                                
-ram:ram:eed4    ef              ??          EFh                                     
-ram:ram:eed5    00              ??          00h                                     
-ram:ram:eed6    00              ??          00h                                     
-ram:ram:eed7    00              ??          00h                                     
-ram:ram:eed8    00              ??          00h                                     
-ram:ram:eed9    00              ??          00h                                     
-ram:ram:eeda    00              ??          00h                                     
-ram:ram:eedb    65              ??          65h    e                                
-ram:ram:eedc    f9              ??          F9h                                     
-ram:ram:eedd    5c              ??          5Ch    \                                
-ram:ram:eede    ef              ??          EFh                                     
-ram:ram:eedf    05              ??          05h                                     
-ram:ram:eee0    f9              ??          F9h                                     
-ram:ram:eee1    8f              ??          8Fh                                     
-ram:ram:eee2    f7              ??          F7h                                     
-ram:ram:eee3    33              ??          33h    3                                
-ram:ram:eee4    ef              ??          EFh                                     
-ram:ram:eee5    00              ??          00h                                     
-ram:ram:eee6    00              ??          00h                                     
-ram:ram:eee7    00              ??          00h                                     
-ram:ram:eee8    00              ??          00h                                     
-ram:ram:eee9    00              ??          00h                                     
-ram:ram:eeea    00              ??          00h                                     
-ram:ram:eeeb    65              ??          65h    e                                
-ram:ram:eeec    f9              ??          F9h                                     
-ram:ram:eeed    5c              ??          5Ch    \                                
-ram:ram:eeee    ef              ??          EFh                                     
-ram:ram:eeef    15              ??          15h                                     
-ram:ram:eef0    f9              ??          F9h                                     
-ram:ram:eef1    ae              ??          AEh                                     
-ram:ram:eef2    f7              ??          F7h                                     
-ram:ram:eef3    00              ??          00h                                     
-ram:ram:eef4    00              ??          00h                                     
-ram:ram:eef5    00              ??          00h                                     
-ram:ram:eef6    00              ??          00h                                     
-ram:ram:eef7    00              ??          00h                                     
-ram:ram:eef8    00              ??          00h                                     
-ram:ram:eef9    00              ??          00h                                     
-ram:ram:eefa    00              ??          00h                                     
-ram:ram:eefb    65              ??          65h    e                                
-ram:ram:eefc    f9              ??          F9h                                     
-ram:ram:eefd    6b              ??          6Bh    k                                
-ram:ram:eefe    ef              ??          EFh                                     
-ram:ram:eeff    25              ??          25h    %                                
-ram:ram:ef00    f9              ??          F9h                                     
-ram:ram:ef01    cd              ??          CDh                                     
-ram:ram:ef02    f7              ??          F7h                                     
-ram:ram:ef03    00              ??          00h                                     
-ram:ram:ef04    00              ??          00h                                     
-ram:ram:ef05    00              ??          00h                                     
-ram:ram:ef06    00              ??          00h                                     
-ram:ram:ef07    00              ??          00h                                     
-ram:ram:ef08    00              ??          00h                                     
-ram:ram:ef09    00              ??          00h                                     
-ram:ram:ef0a    00              ??          00h                                     
-ram:ram:ef0b    65              ??          65h    e                                
-ram:ram:ef0c    f9              ??          F9h                                     
-ram:ram:ef0d    6b              ??          6Bh    k                                
-ram:ram:ef0e    ef              ??          EFh                                     
-ram:ram:ef0f    45              ??          45h    E                                
-ram:ram:ef10    f9              ??          F9h                                     
-ram:ram:ef11    19              ??          19h                                     
-ram:ram:ef12    f8              ??          F8h                                     
-ram:ram:ef13    01              ??          01h                                     
-ram:ram:ef14    02              ??          02h                                     
-ram:ram:ef15    07              ??          07h                                     
-ram:ram:ef16    08              ??          08h                                     
-ram:ram:ef17    0d              ??          0Dh                                     
-ram:ram:ef18    0e              ??          0Eh                                     
-ram:ram:ef19    13              ??          13h                                     
-ram:ram:ef1a    14              ??          14h                                     
-ram:ram:ef1b    19              ??          19h                                     
-ram:ram:ef1c    1a              ??          1Ah                                     
-ram:ram:ef1d    1f              ??          1Fh                                     
-ram:ram:ef1e    20              ??          20h                                     
-ram:ram:ef1f    05              ??          05h                                     
-ram:ram:ef20    06              ??          06h                                     
-ram:ram:ef21    0b              ??          0Bh                                     
-ram:ram:ef22    0c              ??          0Ch                                     
-ram:ram:ef23    11              ??          11h                                     
-ram:ram:ef24    12              ??          12h                                     
-ram:ram:ef25    17              ??          17h                                     
-ram:ram:ef26    18              ??          18h                                     
-ram:ram:ef27    1d              ??          1Dh                                     
-ram:ram:ef28    1e              ??          1Eh                                     
-ram:ram:ef29    03              ??          03h                                     
-ram:ram:ef2a    04              ??          04h                                     
-ram:ram:ef2b    09              ??          09h                                     
-ram:ram:ef2c    0a              ??          0Ah                                     
-ram:ram:ef2d    0f              ??          0Fh                                     
-ram:ram:ef2e    10              ??          10h                                     
-ram:ram:ef2f    15              ??          15h                                     
-ram:ram:ef30    16              ??          16h                                     
-ram:ram:ef31    1b              ??          1Bh                                     
-ram:ram:ef32    1c              ??          1Ch                                     
-ram:ram:ef33    01              ??          01h                                     
-ram:ram:ef34    07              ??          07h                                     
-ram:ram:ef35    0d              ??          0Dh                                     
-ram:ram:ef36    13              ??          13h                                     
-ram:ram:ef37    19              ??          19h                                     
-ram:ram:ef38    05              ??          05h                                     
-ram:ram:ef39    0b              ??          0Bh                                     
-ram:ram:ef3a    11              ??          11h                                     
-ram:ram:ef3b    17              ??          17h                                     
-ram:ram:ef3c    03              ??          03h                                     
-ram:ram:ef3d    09              ??          09h                                     
-ram:ram:ef3e    0f              ??          0Fh                                     
-ram:ram:ef3f    15              ??          15h                                     
-ram:ram:ef40    02              ??          02h                                     
-ram:ram:ef41    08              ??          08h                                     
-ram:ram:ef42    0e              ??          0Eh                                     
-ram:ram:ef43    14              ??          14h                                     
-ram:ram:ef44    1a              ??          1Ah                                     
-ram:ram:ef45    06              ??          06h                                     
-ram:ram:ef46    0c              ??          0Ch                                     
-ram:ram:ef47    12              ??          12h                                     
-ram:ram:ef48    18              ??          18h                                     
-ram:ram:ef49    04              ??          04h                                     
-ram:ram:ef4a    0a              ??          0Ah                                     
-ram:ram:ef4b    10              ??          10h                                     
-ram:ram:ef4c    16              ??          16h                                     
-ram:ram:ef4d    20              ??          20h                                     
-ram:ram:ef4e    00              ??          00h                                     
-ram:ram:ef4f    04              ??          04h                                     
-ram:ram:ef50    0f              ??          0Fh                                     
-ram:ram:ef51    01              ??          01h                                     
-ram:ram:ef52    9b              ??          9Bh                                     
-ram:ram:ef53    00              ??          00h                                     
-ram:ram:ef54    3f              ??          3Fh    ?                                
-ram:ram:ef55    00              ??          00h                                     
-ram:ram:ef56    80              ??          80h                                     
-ram:ram:ef57    00              ??          00h                                     
-ram:ram:ef58    10              ??          10h                                     
-ram:ram:ef59    00              ??          00h                                     
-ram:ram:ef5a    02              ??          02h                                     
-ram:ram:ef5b    00              ??          00h                                     
-ram:ram:ef5c    1a              ??          1Ah                                     
-ram:ram:ef5d    00              ??          00h                                     
-ram:ram:ef5e    03              ??          03h                                     
-ram:ram:ef5f    07              ??          07h                                     
-ram:ram:ef60    00              ??          00h                                     
-ram:ram:ef61    f2              ??          F2h                                     
-ram:ram:ef62    00              ??          00h                                     
-ram:ram:ef63    3f              ??          3Fh    ?                                
-ram:ram:ef64    00              ??          00h                                     
-ram:ram:ef65    c0              ??          C0h                                     
-ram:ram:ef66    00              ??          00h                                     
-ram:ram:ef67    10              ??          10h                                     
-ram:ram:ef68    00              ??          00h                                     
-ram:ram:ef69    02              ??          02h                                     
-ram:ram:ef6a    00              ??          00h                                     
-ram:ram:ef6b    40              ??          40h    @                                
-ram:ram:ef6c    00              ??          00h                                     
-ram:ram:ef6d    04              ??          04h                                     
-ram:ram:ef6e    0f              ??          0Fh                                     
-ram:ram:ef6f    00              ??          00h                                     
-ram:ram:ef70    5f              ??          5Fh    _                                
-ram:ram:ef71    02              ??          02h                                     
-ram:ram:ef72    7f              ??          7Fh                                    
-ram:ram:ef73    00              ??          00h                                     
-ram:ram:ef74    c0              ??          C0h                                     
-ram:ram:ef75    00              ??          00h                                     
-ram:ram:ef76    20              ??          20h                                     
-ram:ram:ef77    00              ??          00h                                     
-ram:ram:ef78    02              ??          02h                                     
-ram:ram:ef79    00              ??          00h                                     
+                            dph00:                        ;XREF[1,0]:   ram:f1a1
+                            diskParamHeader:              
+ram:ram:ee33    13ef            dw          EF13h                                   ;sector translation table pointer
+ram:ram:ee35    0000            dw          0h                                      ;workspace
+ram:ram:ee37    0000            dw          0h                                      
+ram:ram:ee39    0000            dw          0h                                      
+ram:ram:ee3b    65f9            dw          F965h                                   ;sector buffer (same for all DPH)
+ram:ram:ee3d    4def            dw          EF4Dh                                   ;Disk Parameter Block (DPB) pointer
+ram:ram:ee3f    65f8            dw          F865h                                   ;directory checksum vector
+ram:ram:ee41    b1f6            dw          F6B1h                                   ;allocation vector pointer
+                            dph01:                        
+ram:ram:ee43    13ef            dw          EF13h                                   
+ram:ram:ee45    0000            dw          0h                                      
+ram:ram:ee47    0000            dw          0h                                      
+ram:ram:ee49    0000            dw          0h                                      
+ram:ram:ee4b    65f9            dw          F965h                                   
+ram:ram:ee4d    4def            dw          EF4Dh                                   
+ram:ram:ee4f    75f8            dw          F875h                                   
+ram:ram:ee51    c5f6            dw          F6C5h                                   
+                            dph02:                        
+ram:ram:ee53    13ef            dw          EF13h                                   
+ram:ram:ee55    0000            dw          0h                                      
+ram:ram:ee57    0000            dw          0h                                      
+ram:ram:ee59    0000            dw          0h                                      
+ram:ram:ee5b    65f9            dw          F965h                                   
+ram:ram:ee5d    4def            dw          EF4Dh                                   
+ram:ram:ee5f    85f8            dw          F885h                                   
+ram:ram:ee61    d9f6            dw          F6D9h                                   
+                            dph03:                        
+ram:ram:ee63    13ef            dw          EF13h                                   
+ram:ram:ee65    0000            dw          0h                                      
+ram:ram:ee67    0000            dw          0h                                      
+ram:ram:ee69    0000            dw          0h                                      
+ram:ram:ee6b    65f9            dw          F965h                                   
+ram:ram:ee6d    4def            dw          EF4Dh                                   
+ram:ram:ee6f    95f8            dw          F895h                                   
+ram:ram:ee71    edf6            dw          F6EDh                                   
+                            dph04:                        
+ram:ram:ee73    13ef            dw          EF13h                                   
+ram:ram:ee75    0000            dw          0h                                      
+ram:ram:ee77    0000            dw          0h                                      
+ram:ram:ee79    0000            dw          0h                                      
+ram:ram:ee7b    65f9            dw          F965h                                   
+ram:ram:ee7d    4def            dw          EF4Dh                                   
+ram:ram:ee7f    a5f8            dw          F8A5h                                   
+ram:ram:ee81    01f7            dw          F701h                                   
+                            dph05:                        
+ram:ram:ee83    13ef            dw          EF13h                                   
+ram:ram:ee85    0000            dw          0h                                      
+ram:ram:ee87    0000            dw          0h                                      
+ram:ram:ee89    0000            dw          0h                                      
+ram:ram:ee8b    65f9            dw          F965h                                   
+ram:ram:ee8d    4def            dw          EF4Dh                                   
+ram:ram:ee8f    b5f8            dw          F8B5h                                   
+ram:ram:ee91    15f7            dw          F715h                                   
+                            dph06:                        
+ram:ram:ee93    13ef            dw          EF13h                                   
+ram:ram:ee95    0000            dw          0h                                      
+ram:ram:ee97    0000            dw          0h                                      
+ram:ram:ee99    0000            dw          0h                                      
+ram:ram:ee9b    65f9            dw          F965h                                   
+ram:ram:ee9d    4def            dw          EF4Dh                                   
+ram:ram:ee9f    c5f8            dw          F8C5h                                   
+ram:ram:eea1    29f7            dw          F729h                                   
+                            dph07:                        
+ram:ram:eea3    13ef            dw          EF13h                                   
+ram:ram:eea5    0000            dw          0h                                      
+ram:ram:eea7    0000            dw          0h                                      
+ram:ram:eea9    0000            dw          0h                                      
+ram:ram:eeab    65f9            dw          F965h                                   
+ram:ram:eead    4def            dw          EF4Dh                                   
+ram:ram:eeaf    d5f8            dw          F8D5h                                   
+ram:ram:eeb1    3df7            dw          F73Dh                                   
+                            dph08:                        
+ram:ram:eeb3    33ef            dw          EF33h                                   
+ram:ram:eeb5    0000            dw          0h                                      
+ram:ram:eeb7    0000            dw          0h                                      
+ram:ram:eeb9    0000            dw          0h                                      
+ram:ram:eebb    65f9            dw          F965h                                   
+ram:ram:eebd    5cef            dw          EF5Ch                                   
+ram:ram:eebf    e5f8            dw          F8E5h                                   
+ram:ram:eec1    51f7            dw          F751h                                   
+                            dph09:                        
+ram:ram:eec3    33ef            dw          EF33h                                   
+ram:ram:eec5    0000            dw          0h                                      
+ram:ram:eec7    0000            dw          0h                                      
+ram:ram:eec9    0000            dw          0h                                      
+ram:ram:eecb    65f9            dw          F965h                                   
+ram:ram:eecd    5cef            dw          EF5Ch                                   
+ram:ram:eecf    f5f8            dw          F8F5h                                   
+ram:ram:eed1    70f7            dw          F770h                                   
+                            dph0A:                        
+ram:ram:eed3    33ef            dw          EF33h                                   
+ram:ram:eed5    0000            dw          0h                                      
+ram:ram:eed7    0000            dw          0h                                      
+ram:ram:eed9    0000            dw          0h                                      
+ram:ram:eedb    65f9            dw          F965h                                   
+ram:ram:eedd    5cef            dw          EF5Ch                                   
+ram:ram:eedf    05f9            dw          F905h                                   
+ram:ram:eee1    8ff7            dw          F78Fh                                   
+                            dph0B:                        
+ram:ram:eee3    33ef            dw          EF33h                                   
+ram:ram:eee5    0000            dw          0h                                      
+ram:ram:eee7    0000            dw          0h                                      
+ram:ram:eee9    0000            dw          0h                                      
+ram:ram:eeeb    65f9            dw          F965h                                   
+ram:ram:eeed    5cef            dw          EF5Ch                                   
+ram:ram:eeef    15f9            dw          F915h                                   
+ram:ram:eef1    aef7            dw          F7AEh                                   
+                            dph0C:                        
+ram:ram:eef3    00              db          0h                                      
+ram:ram:eef4    00              db          0h                                      
+ram:ram:eef5    00              db          0h                                      
+ram:ram:eef6    00              db          0h                                      
+ram:ram:eef7    00              db          0h                                      
+ram:ram:eef8    00              db          0h                                      
+ram:ram:eef9    00              db          0h                                      
+ram:ram:eefa    00              db          0h                                      
+ram:ram:eefb    65              db          65h                                     
+ram:ram:eefc    f9              db          F9h                                     
+ram:ram:eefd    6b              db          6Bh                                     
+ram:ram:eefe    ef              db          EFh                                     
+ram:ram:eeff    25              db          25h                                     
+ram:ram:ef00    f9              db          F9h                                     
+ram:ram:ef01    cd              db          CDh                                     
+ram:ram:ef02    f7              db          F7h                                     
+                            dph0D:                        
+ram:ram:ef03    00              db          0h                                      
+ram:ram:ef04    00              db          0h                                      
+ram:ram:ef05    00              db          0h                                      
+ram:ram:ef06    00              db          0h                                      
+ram:ram:ef07    00              db          0h                                      
+ram:ram:ef08    00              db          0h                                      
+ram:ram:ef09    00              db          0h                                      
+ram:ram:ef0a    00              db          0h                                      
+ram:ram:ef0b    65              db          65h                                     
+ram:ram:ef0c    f9              db          F9h                                     
+ram:ram:ef0d    6b              db          6Bh                                     
+ram:ram:ef0e    ef              db          EFh                                     
+ram:ram:ef0f    45              db          45h                                     
+ram:ram:ef10    f9              db          F9h                                     
+ram:ram:ef11    19              db          19h                                     
+ram:ram:ef12    f8              db          F8h                                     
+                            ;************************************************************************************************
+                            ;*  Sector Translation Table 0                                                                  *
+                            ;*  This should be the translation table used                                                   *
+                            ;*  for the built-in 5" drives on the MBC-1000                                                  *
+                            ;************************************************************************************************
+                            sectTransTbl0:                
+ram:ram:ef13    01              db          1                                       
+ram:ram:ef14    02              db          2                                       
+ram:ram:ef15    07              db          7                                       
+ram:ram:ef16    08              db          8                                       
+ram:ram:ef17    0d              db          13                                      
+ram:ram:ef18    0e              db          14                                      
+ram:ram:ef19    13              db          19                                      
+ram:ram:ef1a    14              db          20                                      
+ram:ram:ef1b    19              db          25                                      
+ram:ram:ef1c    1a              db          26                                      
+ram:ram:ef1d    1f              db          31                                      
+ram:ram:ef1e    20              db          32                                      
+ram:ram:ef1f    05              db          5                                       
+ram:ram:ef20    06              db          6                                       
+ram:ram:ef21    0b              db          11                                      
+ram:ram:ef22    0c              db          12                                      
+ram:ram:ef23    11              db          17                                      
+ram:ram:ef24    12              db          18                                      
+ram:ram:ef25    17              db          23                                      
+ram:ram:ef26    18              db          24                                      
+ram:ram:ef27    1d              db          29                                      
+ram:ram:ef28    1e              db          30                                      
+ram:ram:ef29    03              db          3                                       
+ram:ram:ef2a    04              db          4                                       
+ram:ram:ef2b    09              db          9                                       
+ram:ram:ef2c    0a              db          10                                      
+ram:ram:ef2d    0f              db          15                                      
+ram:ram:ef2e    10              db          16                                      
+ram:ram:ef2f    15              db          21                                      
+ram:ram:ef30    16              db          22                                      
+ram:ram:ef31    1b              db          27                                      
+ram:ram:ef32    1c              db          28                                      
+                            ;************************************************************************************************
+                            ;*  Sector Translation Table 1                                                                  *
+                            ;*  This is the CP/M 1 standard fixed skew for 8" disks                                         *
+                            ;************************************************************************************************
+                            sectTransTbl1:                
+ram:ram:ef33    01              db          1                                       
+ram:ram:ef34    07              db          7                                       
+ram:ram:ef35    0d              db          13                                      
+ram:ram:ef36    13              db          19                                      
+ram:ram:ef37    19              db          25                                      
+ram:ram:ef38    05              db          5                                       
+ram:ram:ef39    0b              db          11                                      
+ram:ram:ef3a    11              db          17                                      
+ram:ram:ef3b    17              db          23                                      
+ram:ram:ef3c    03              db          3                                       
+ram:ram:ef3d    09              db          9                                       
+ram:ram:ef3e    0f              db          15                                      
+ram:ram:ef3f    15              db          21                                      
+ram:ram:ef40    02              db          2                                       
+ram:ram:ef41    08              db          8                                       
+ram:ram:ef42    0e              db          14                                      
+ram:ram:ef43    14              db          20                                      
+ram:ram:ef44    1a              db          26                                      
+ram:ram:ef45    06              db          6                                       
+ram:ram:ef46    0c              db          12                                      
+ram:ram:ef47    12              db          18                                      
+ram:ram:ef48    18              db          24                                      
+ram:ram:ef49    04              db          4                                       
+ram:ram:ef4a    0a              db          10                                      
+ram:ram:ef4b    10              db          16                                      
+ram:ram:ef4c    16              db          22                                      
+                            ;************************************************************************************************
+                            ;*  Disk Parameter Blocks                                                                       *
+                            ;*  https://www.seasip.info/Cpm/format22.html                                                   *
+                            ;************************************************************************************************
+                            diskParameterBlock0:          
+ram:ram:ef4d    2000            dw          20h                                     ;SPT - Sect per track (32)
+ram:ram:ef4f    04              db          4h                                      ;BSH - block shift (2k)
+ram:ram:ef50    0f              db          Fh                                      ;BLM - Block mask (2k)
+ram:ram:ef51    01              db          1h                                      ;EXM - extent mask
+ram:ram:ef52    9b00            dw          9Bh                                     ;DSM - num blocks on disk-1 (156)
+ram:ram:ef54    3f00            dw          3Fh                                     ;DRM - num dir entries-1 (64)
+ram:ram:ef56    80              db          80h                                     ;AL0 - Directory allocation bitmap 0
+ram:ram:ef57    00              db          0h                                      ;AL1 - Directory allocation bitmap 1
+ram:ram:ef58    1000            dw          10h                                     ;CKS - Checksum vector size
+ram:ram:ef5a    0200            dw          2h                                      ;OFF - offset (reserved tracks) (2)
+                            diskParameterBlock1:          
+ram:ram:ef5c    1a00            dw          1Ah                                     ;SPT (26)
+ram:ram:ef5e    03              db          3h                                      ;BSH (1k)
+ram:ram:ef5f    07              db          7h                                      ;BLM (1k)
+ram:ram:ef60    00              db          0h                                      ;EXM
+ram:ram:ef61    f200            dw          F2h                                     ;DSM (243)
+ram:ram:ef63    3f00            dw          3Fh                                     ;DRM (64)
+ram:ram:ef65    c0              db          C0h                                     ;AL0
+ram:ram:ef66    00              db          0h                                      ;AL1
+ram:ram:ef67    1000            dw          10h                                     ;CKS
+ram:ram:ef69    0200            dw          2h                                      ;OFF (2)
+                            diskParameterBlock2:          
+ram:ram:ef6b    4000            dw          40h                                     ;SPT (64)
+ram:ram:ef6d    04              db          4h                                      ;BSH (2k)
+ram:ram:ef6e    0f              db          Fh                                      ;BLM (2k)
+ram:ram:ef6f    00              db          0h                                      ;EXM
+ram:ram:ef70    5f02            dw          25Fh                                    ;DSM (608)
+ram:ram:ef72    7f00            dw          7Fh                                     ;DRM (128)
+ram:ram:ef74    c0              db          C0h                                     ;AL0
+ram:ram:ef75    00              db          0h                                      ;AL1
+ram:ram:ef76    2000            dw          20h                                     ;CKS
+ram:ram:ef78    0200            dw          2h                                      ;OFF (2)
                             ;************************************************************************************************
                             ;*                                   BIOS Cold Boot function                                    *
                             ;************************************************************************************************
@@ -755,15 +679,15 @@ ram:ram:f153    c9              RET
           ;local_res0    undefined2           0                      ;XREF[10,0]:  ram:f166,ram:f167,ram:f168,ram:f169,ram:f16a
                                                                      ;             ram:f16b,ram:f182,ram:f183,ram:f184,ram:f185
                                                           ;XREF[2,0]:   ram:ee18,ram:efdc
-ram:ram:f154    3aa3f6          LD          A,(WORD_ram_f6a3)                       ;= 100h
+ram:ram:f154    3aa3f6          LD          A,(currentDisk)                         ;= 100h
 ram:ram:f157    4f              LD          C,A                                     
 ram:ram:f158    cd41f4          CALL        FUN_ram_f441                            ;undefined FUN_ram_f441()
-ram:ram:f15b    3aa3f6          LD          A,(WORD_ram_f6a3)                       ;= 100h
+ram:ram:f15b    3aa3f6          LD          A,(currentDisk)                         ;= 100h
 ram:ram:f15e    fe08            CP          0x8                                     
 ram:ram:f160    301c            JR          NC,LAB_ram_f17e                         
 ram:ram:f162    3ef4            LD          A,0xf4                                  
 ram:ram:f164    d3e4            OUT         (fdcStatCmd),A                          
-ram:ram:f166    e3              EX          (SP=>local_res0),HL                     
+ram:ram:f166    e3              EX          (SP=>local_res0),HL                     ;delay
 ram:ram:f167    e3              EX          (SP=>local_res0),HL                     
 ram:ram:f168    e3              EX          (SP=>local_res0),HL                     
 ram:ram:f169    e3              EX          (SP=>local_res0),HL                     
@@ -807,14 +731,14 @@ ram:ram:f191    fe10            CP          0x10
 ram:ram:f193    d0              RET         NC                                      
 ram:ram:f194    fe04            CP          0x4                                     
 ram:ram:f196    c8              RET         Z                                       
-ram:ram:f197    32a3f6          LD          (WORD_ram_f6a3),A                       ;= 100h
+ram:ram:f197    32a3f6          LD          (currentDisk),A                         ;= 100h
 ram:ram:f19a    6f              LD          L,A                                     
 ram:ram:f19b    2600            LD          H,0x0                                   
-ram:ram:f19d    29              ADD         HL,HL                                   
+ram:ram:f19d    29              ADD         HL,HL                                   ;shift disk number left by 4
 ram:ram:f19e    29              ADD         HL,HL                                   
 ram:ram:f19f    29              ADD         HL,HL                                   
 ram:ram:f1a0    29              ADD         HL,HL                                   
-ram:ram:f1a1    1133ee          LD          DE,0xee33                               
+ram:ram:f1a1    1133ee          LD          DE,diskParamHeader                      ;= EF13h
 ram:ram:f1a4    19              ADD         HL,DE                                   
 ram:ram:f1a5    c9              RET                                                 
                             ;************************************************************************************************
@@ -885,18 +809,18 @@ ram:ram:f1c7    cd9df2          CALL        FUN_ram_f29d                        
 ram:ram:f1ca    b7              OR          A                                       
 ram:ram:f1cb    c26df3          JP          NZ,LAB_ram_f36d                         
                             LAB_ram_f1ce:                 ;XREF[1,0]:   ram:f1c5
-ram:ram:f1ce    3aa3f6          LD          A,(WORD_ram_f6a3)                       ;= 100h
+ram:ram:f1ce    3aa3f6          LD          A,(currentDisk)                         ;= 100h
 ram:ram:f1d1    fe08            CP          0x8                                     
 ram:ram:f1d3    3805            JR          C,LAB_ram_f1da                          
 ram:ram:f1d5    fe0c            CP          0xc                                     
 ram:ram:f1d7    dae0f4          JP          C,LAB_ram_f4e0                          
                             LAB_ram_f1da:                 ;XREF[1,0]:   ram:f1d3
-ram:ram:f1da    11a3f6          LD          DE,0xf6a3                               
-ram:ram:f1dd    21a6f6          LD          HL,0xf6a6                               
+ram:ram:f1da    11a3f6          LD          DE,currentDisk                          ;= 100h
+ram:ram:f1dd    21a6f6          LD          HL,WORD_ram_f6a6                        ;= FFFFh
 ram:ram:f1e0    0603            LD          B,0x3                                   
                             LAB_ram_f1e2:                 ;XREF[1,0]:   ram:f1e8
                                                           ; FWD[2,0]:   ram:f6a3,ram:f6a4
-ram:ram:f1e2    1a              LD          A,(DE=>WORD_ram_f6a3)                   ;= 100h
+ram:ram:f1e2    1a              LD          A,(DE=>currentDisk)                     ;= 100h
                                                           ; FWD[2,0]:   ram:f6a6,ram:f6a7
 ram:ram:f1e3    be              CP          (HL=>WORD_ram_f6a6)                     ;= FFFFh
 ram:ram:f1e4    2012            JR          NZ,LAB_ram_f1f8                         
@@ -912,7 +836,7 @@ ram:ram:f1f4    edb0            LDIR
 ram:ram:f1f6    af              XOR         A                                       
 ram:ram:f1f7    c9              RET                                                 
                             LAB_ram_f1f8:                 ;XREF[1,0]:   ram:f1e4
-ram:ram:f1f8    3aa3f6          LD          A,(WORD_ram_f6a3)                       ;= 100h
+ram:ram:f1f8    3aa3f6          LD          A,(currentDisk)                         ;= 100h
 ram:ram:f1fb    fe0c            CP          0xc                                     
 ram:ram:f1fd    304e            JR          NC,LAB_ram_f24d                         
 ram:ram:f1ff    3aa5f6          LD          A,(currentSector)                       ;= 1h
@@ -924,7 +848,7 @@ ram:ram:f208    21a9f6          LD          HL,0xf6a9
 ram:ram:f20b    0602            LD          B,0x2                                   
                             LAB_ram_f20d:                 ;XREF[1,0]:   ram:f213
                                                           ; FWD[2,0]:   ram:f6a3,ram:f6a4
-ram:ram:f20d    1a              LD          A,(DE=>WORD_ram_f6a3)                   ;= 100h
+ram:ram:f20d    1a              LD          A,(DE=>currentDisk)                     ;= 100h
                                                           ; FWD[2,0]:   ram:f6a9,ram:f6aa
 ram:ram:f20e    be              CP          (HL=>BYTE_ram_f6a9)                     ;= FFh
 ram:ram:f20f    201e            JR          NZ,LAB_ram_f22f                         
@@ -951,7 +875,7 @@ ram:ram:f228    18c3            JR          LAB_ram_f1ed
 ram:ram:f22a    2165fa          LD          HL,0xfa65                               
 ram:ram:f22d    18be            JR          LAB_ram_f1ed                            
                             LAB_ram_f22f:                 ;XREF[3,0]:   ram:f203,ram:f20f,ram:f21f
-ram:ram:f22f    2aa3f6          LD          HL,(WORD_ram_f6a3)                      ;= 100h
+ram:ram:f22f    2aa3f6          LD          HL,(currentDisk)                        ;= 100h
 ram:ram:f232    22a9f6          LD          (BYTE_ram_f6a9),HL                      ;= FFh
 ram:ram:f235    af              XOR         A                                       
 ram:ram:f236    3aa5f6          LD          A,(currentSector)                       ;= 1h
@@ -980,7 +904,7 @@ ram:ram:f259    21a9f6          LD          HL,0xf6a9
 ram:ram:f25c    0602            LD          B,0x2                                   
                             LAB_ram_f25e:                 ;XREF[1,0]:   ram:f264
                                                           ; FWD[2,0]:   ram:f6a3,ram:f6a4
-ram:ram:f25e    1a              LD          A,(DE=>WORD_ram_f6a3)                   ;= 100h
+ram:ram:f25e    1a              LD          A,(DE=>currentDisk)                     ;= 100h
                                                           ; FWD[2,0]:   ram:f6a9,ram:f6aa
 ram:ram:f25f    be              CP          (HL=>BYTE_ram_f6a9)                     ;= FFh
 ram:ram:f260    202a            JR          NZ,LAB_ram_f28c                         
@@ -1043,56 +967,56 @@ ram:ram:f2b0    c9              RET
                             ;*  Returns result in A:                                                                        *
                             ;*  0: OK | 1: Unrecoverable Error | FFh: Media Changed                                         *
                             ;************************************************************************************************
-                            ;char biosWRITE(char blocking)
-          ;blocking      char                 A                      
+                            ;char biosWRITE(char paramA)
+          ;paramA        char                C_                      
                                                           ;XREF[1,0]:   ram:ee2a
-ram:ram:f2b1    3aa3f6          LD          blocking,(WORD_ram_f6a3)                ;= 100h
+ram:ram:f2b1    3aa3f6          LD          A,(currentDisk)                         ;= 100h
 ram:ram:f2b4    fe08            CP          0x8                                     
-ram:ram:f2b6    d27ff3          JP          NC,LAB_ram_f37f                         
-ram:ram:f2b9    3aaff6          LD          blocking,(BYTE_ram_f6af)                
-ram:ram:f2bc    b7              OR          blocking                                
+ram:ram:f2b6    d27ff3          JP          NC,LAB_ram_f37f                         ;branch if disk >= 8
+ram:ram:f2b9    3aaff6          LD          A,(BYTE_ram_f6af)                       
+ram:ram:f2bc    b7              OR          A                                       
 ram:ram:f2bd    2805            JR          Z,LAB_ram_f2c4                          
 ram:ram:f2bf    c5              PUSH        BC                                      
 ram:ram:f2c0    cd9df2          CALL        FUN_ram_f29d                            ;undefined FUN_ram_f29d()
 ram:ram:f2c3    c1              POP         BC                                      
                             LAB_ram_f2c4:                 ;XREF[1,0]:   ram:f2bd
-ram:ram:f2c4    79              LD          blocking,C                              
+ram:ram:f2c4    79              LD          A,C                                     ;check blocking parameter
 ram:ram:f2c5    fe01            CP          0x1                                     
-ram:ram:f2c7    2004            JR          NZ,LAB_ram_f2cd                         
-ram:ram:f2c9    3c              INC         blocking                                
-ram:ram:f2ca    32adf6          LD          (BYTE_ram_f6ad),blocking                
+ram:ram:f2c7    2004            JR          NZ,LAB_ram_f2cd                         ;branch if non-blocking requested
+ram:ram:f2c9    3c              INC         A                                       
+ram:ram:f2ca    32adf6          LD          (BYTE_ram_f6ad),A                       
                             LAB_ram_f2cd:                 ;XREF[1,0]:   ram:f2c7
-ram:ram:f2cd    3aacf6          LD          blocking,(BYTE_ram_f6ac)                
-ram:ram:f2d0    b7              OR          blocking                                
+ram:ram:f2cd    3aacf6          LD          A,(BYTE_ram_f6ac)                       
+ram:ram:f2d0    b7              OR          A                                       
 ram:ram:f2d1    286a            JR          Z,LAB_ram_f33d                          
 ram:ram:f2d3    2aa6f6          LD          HL,(WORD_ram_f6a6)                      ;= FFFFh
-ram:ram:f2d6    ed5ba3f6        LD          DE,(WORD_ram_f6a3)                      ;= 100h
+ram:ram:f2d6    ed5ba3f6        LD          DE,(currentDisk)                        ;= 100h
 ram:ram:f2da    ed52            SBC         HL,DE                                   
 ram:ram:f2dc    2040            JR          NZ,LAB_ram_f31e                         
-ram:ram:f2de    3aa5f6          LD          blocking,(currentSector)                ;= 1h
+ram:ram:f2de    3aa5f6          LD          A,(currentSector)                       ;= 1h
 ram:ram:f2e1    1f              RRA                                                 
 ram:ram:f2e2    3804            JR          C,LAB_ram_f2e8                          
 ram:ram:f2e4    17              RLA                                                 
-ram:ram:f2e5    3d              DEC         blocking                                
+ram:ram:f2e5    3d              DEC         A                                       
 ram:ram:f2e6    1802            JR          LAB_ram_f2ea                            
                             LAB_ram_f2e8:                 ;XREF[1,0]:   ram:f2e2
 ram:ram:f2e8    17              RLA                                                 
-ram:ram:f2e9    3c              INC         blocking                                
+ram:ram:f2e9    3c              INC         A                                       
                             LAB_ram_f2ea:                 ;XREF[1,0]:   ram:f2e6
 ram:ram:f2ea    21a8f6          LD          HL,0xf6a8                               
 ram:ram:f2ed    be              CP          (HL=>BYTE_ram_f6a8)                     ;= FFh
 ram:ram:f2ee    202e            JR          NZ,LAB_ram_f31e                         
-ram:ram:f2f0    cb47            BIT         0x0,blocking                            
+ram:ram:f2f0    cb47            BIT         0x0,A                                   
 ram:ram:f2f2    2001            JR          NZ,LAB_ram_f2f5                         
-ram:ram:f2f4    3d              DEC         blocking                                
+ram:ram:f2f4    3d              DEC         A                                       
                             LAB_ram_f2f5:                 ;XREF[1,0]:   ram:f2f2
-ram:ram:f2f5    32abf6          LD          (BYTE_ram_f6ab),blocking                ;= FFh
-ram:ram:f2f8    2aa3f6          LD          HL,(WORD_ram_f6a3)                      ;= 100h
+ram:ram:f2f5    32abf6          LD          (BYTE_ram_f6ab),A                       ;= FFh
+ram:ram:f2f8    2aa3f6          LD          HL,(currentDisk)                        ;= 100h
 ram:ram:f2fb    22a9f6          LD          (BYTE_ram_f6a9),HL                      ;= FFh
 ram:ram:f2fe    ed5ba1f6        LD          DE,(currentDMA)                         ;= 80h
 ram:ram:f302    2165fa          LD          HL,0xfa65                               
 ram:ram:f305    018000          LD          BC,0x80                                 
-ram:ram:f308    3aa5f6          LD          blocking,(currentSector)                ;= 1h
+ram:ram:f308    3aa5f6          LD          A,(currentSector)                       ;= 1h
 ram:ram:f30b    1f              RRA                                                 
 ram:ram:f30c    3801            JR          C,LAB_ram_f30f                          
 ram:ram:f30e    09              ADD         HL,BC                                   
@@ -1101,28 +1025,28 @@ ram:ram:f30f    eb              EX          DE,HL
                                                           ; FWD[3,0]:   ram:0080,ram:fa65,ram:fae5
 ram:ram:f310    edb0            LDIR                                                
 ram:ram:f312    cdc5f5          CALL        FUN_ram_f5c5                            ;undefined FUN_ram_f5c5()
-ram:ram:f315    b7              OR          blocking                                
+ram:ram:f315    b7              OR          A                                       
 ram:ram:f316    c0              RET         NZ                                      
                             LAB_ram_f317:                 ;XREF[1,0]:   ram:f36b
-ram:ram:f317    32acf6          LD          (BYTE_ram_f6ac),blocking                
+ram:ram:f317    32acf6          LD          (BYTE_ram_f6ac),A                       
                             LAB_ram_f31a:                 ;XREF[1,0]:   ram:f35e
-ram:ram:f31a    32adf6          LD          (BYTE_ram_f6ad),blocking                
+ram:ram:f31a    32adf6          LD          (BYTE_ram_f6ad),A                       
 ram:ram:f31d    c9              RET                                                 
                             LAB_ram_f31e:                 ;XREF[3,0]:   ram:f2dc,ram:f2ee,ram:f363
 ram:ram:f31e    2aa6f6          LD          HL,(WORD_ram_f6a6)                      ;= FFFFh
 ram:ram:f321    22a9f6          LD          (BYTE_ram_f6a9),HL                      ;= FFh
-ram:ram:f324    3aa8f6          LD          blocking,(BYTE_ram_f6a8)                ;= FFh
-ram:ram:f327    cb47            BIT         0x0,blocking                            
+ram:ram:f324    3aa8f6          LD          A,(BYTE_ram_f6a8)                       ;= FFh
+ram:ram:f327    cb47            BIT         0x0,A                                   
 ram:ram:f329    2001            JR          NZ,LAB_ram_f32c                         
-ram:ram:f32b    3d              DEC         blocking                                
+ram:ram:f32b    3d              DEC         A                                       
                             LAB_ram_f32c:                 ;XREF[1,0]:   ram:f329
-ram:ram:f32c    32abf6          LD          (BYTE_ram_f6ab),blocking                ;= FFh
+ram:ram:f32c    32abf6          LD          (BYTE_ram_f6ab),A                       ;= FFh
 ram:ram:f32f    cd8bf4          CALL        FUN_ram_f48b                            ;undefined FUN_ram_f48b()
-ram:ram:f332    b7              OR          blocking                                
+ram:ram:f332    b7              OR          A                                       
 ram:ram:f333    c0              RET         NZ                                      
 ram:ram:f334    cdc5f5          CALL        FUN_ram_f5c5                            ;undefined FUN_ram_f5c5()
-ram:ram:f337    3aadf6          LD          blocking,(BYTE_ram_f6ad)                
-ram:ram:f33a    3d              DEC         blocking                                
+ram:ram:f337    3aadf6          LD          A,(BYTE_ram_f6ad)                       
+ram:ram:f33a    3d              DEC         A                                       
 ram:ram:f33b    2828            JR          Z,LAB_ram_f365                          
                             LAB_ram_f33d:                 ;XREF[1,0]:   ram:f2d1
 ram:ram:f33d    2aa1f6          LD          HL,(currentDMA)                         ;= 80h
@@ -1130,106 +1054,106 @@ ram:ram:f340    11e5f9          LD          DE,0xf9e5
 ram:ram:f343    018000          LD          BC,0x80                                 
                                                           ; FWD[2,0]:   ram:0080,ram:f9e5
 ram:ram:f346    edb0            LDIR                                                
-ram:ram:f348    2aa3f6          LD          HL,(WORD_ram_f6a3)                      ;= 100h
+ram:ram:f348    2aa3f6          LD          HL,(currentDisk)                        ;= 100h
 ram:ram:f34b    22a6f6          LD          (WORD_ram_f6a6),HL                      ;= FFFFh
-ram:ram:f34e    3aa5f6          LD          blocking,(currentSector)                ;= 1h
-ram:ram:f351    32a8f6          LD          (BYTE_ram_f6a8),blocking                ;= FFh
-ram:ram:f354    3e01            LD          blocking,0x1                            
-ram:ram:f356    32acf6          LD          (BYTE_ram_f6ac),blocking                
+ram:ram:f34e    3aa5f6          LD          A,(currentSector)                       ;= 1h
+ram:ram:f351    32a8f6          LD          (BYTE_ram_f6a8),A                       ;= FFh
+ram:ram:f354    3e01            LD          A,0x1                                   
+ram:ram:f356    32acf6          LD          (BYTE_ram_f6ac),A                       
 ram:ram:f359    21adf6          LD          HL,0xf6ad                               
-ram:ram:f35c    7e              LD          blocking,(HL=>BYTE_ram_f6ad)            
-ram:ram:f35d    b7              OR          blocking                                
+ram:ram:f35c    7e              LD          A,(HL=>BYTE_ram_f6ad)                   
+ram:ram:f35d    b7              OR          A                                       
 ram:ram:f35e    28ba            JR          Z,LAB_ram_f31a                          
-ram:ram:f360    3e01            LD          blocking,0x1                            
-ram:ram:f362    77              LD          (HL=>BYTE_ram_f6ad),blocking            
+ram:ram:f360    3e01            LD          A,0x1                                   
+ram:ram:f362    77              LD          (HL=>BYTE_ram_f6ad),A                   
 ram:ram:f363    18b9            JR          LAB_ram_f31e                            
                             LAB_ram_f365:                 ;XREF[1,0]:   ram:f33b
-ram:ram:f365    3eff            LD          blocking,0xff                           
-ram:ram:f367    32a6f6          LD          (WORD_ram_f6a6),blocking                ;= FFFFh
-ram:ram:f36a    af              XOR         blocking                                
+ram:ram:f365    3eff            LD          A,0xff                                  
+ram:ram:f367    32a6f6          LD          (WORD_ram_f6a6),A                       ;= FFFFh
+ram:ram:f36a    af              XOR         A                                       
 ram:ram:f36b    18aa            JR          LAB_ram_f317                            
                             LAB_ram_f36d:                 ;XREF[8,0]:   ram:f1cb,ram:f293,ram:f2a1,ram:f39c
                                                           ;             ram:f3cb,ram:f3de,ram:f3ea,ram:f3f8
-ram:ram:f36d    3aff00          LD          blocking,(DAT_ram_00ff)                 
-ram:ram:f370    32a9f6          LD          (BYTE_ram_f6a9),blocking                ;= FFh
-ram:ram:f373    32aef6          LD          (BYTE_ram_f6ae),blocking                ;= FFh
-ram:ram:f376    af              XOR         blocking                                
-ram:ram:f377    32aff6          LD          (BYTE_ram_f6af),blocking                
-ram:ram:f37a    32b0f6          LD          (BYTE_ram_f6b0),blocking                
-ram:ram:f37d    3c              INC         blocking                                
+ram:ram:f36d    3aff00          LD          A,(DAT_ram_00ff)                        
+ram:ram:f370    32a9f6          LD          (BYTE_ram_f6a9),A                       ;= FFh
+ram:ram:f373    32aef6          LD          (BYTE_ram_f6ae),A                       ;= FFh
+ram:ram:f376    af              XOR         A                                       
+ram:ram:f377    32aff6          LD          (BYTE_ram_f6af),A                       
+ram:ram:f37a    32b0f6          LD          (BYTE_ram_f6b0),A                       
+ram:ram:f37d    3c              INC         A                                       
 ram:ram:f37e    c9              RET                                                 
                             LAB_ram_f37f:                 ;XREF[1,0]:   ram:f2b6
-ram:ram:f37f    fe0c            CP          0xc                                     
+ram:ram:f37f    fe0c            CP          0xc                                     ;we end up here if selected disk is 8...
 ram:ram:f381    dac1f4          JP          C,LAB_ram_f4c1                          
-ram:ram:f384    79              LD          blocking,C                              
-ram:ram:f385    3d              DEC         blocking                                
+ram:ram:f384    79              LD          A,C                                     
+ram:ram:f385    3d              DEC         A                                       
 ram:ram:f386    284c            JR          Z,LAB_ram_f3d4                          
-ram:ram:f388    3d              DEC         blocking                                
+ram:ram:f388    3d              DEC         A                                       
 ram:ram:f389    2019            JR          NZ,LAB_ram_f3a4                         
-ram:ram:f38b    3aa5f6          LD          blocking,(currentSector)                ;= 1h
-ram:ram:f38e    3d              DEC         blocking                                
-ram:ram:f38f    32aef6          LD          (BYTE_ram_f6ae),blocking                ;= FFh
-ram:ram:f392    3aaff6          LD          blocking,(BYTE_ram_f6af)                
-ram:ram:f395    b7              OR          blocking                                
+ram:ram:f38b    3aa5f6          LD          A,(currentSector)                       ;= 1h
+ram:ram:f38e    3d              DEC         A                                       
+ram:ram:f38f    32aef6          LD          (BYTE_ram_f6ae),A                       ;= FFh
+ram:ram:f392    3aaff6          LD          A,(BYTE_ram_f6af)                       
+ram:ram:f395    b7              OR          A                                       
 ram:ram:f396    280c            JR          Z,LAB_ram_f3a4                          
 ram:ram:f398    cdd9f5          CALL        FUN_ram_f5d9                            ;undefined FUN_ram_f5d9()
-ram:ram:f39b    b7              OR          blocking                                
+ram:ram:f39b    b7              OR          A                                       
 ram:ram:f39c    20cf            JR          NZ,LAB_ram_f36d                         
-ram:ram:f39e    32aff6          LD          (BYTE_ram_f6af),blocking                
-ram:ram:f3a1    32b0f6          LD          (BYTE_ram_f6b0),blocking                
+ram:ram:f39e    32aff6          LD          (BYTE_ram_f6af),A                       
+ram:ram:f3a1    32b0f6          LD          (BYTE_ram_f6b0),A                       
                             LAB_ram_f3a4:                 ;XREF[2,0]:   ram:f389,ram:f396
 ram:ram:f3a4    21a5f6          LD          HL,0xf6a5                               
-ram:ram:f3a7    3aaef6          LD          blocking,(BYTE_ram_f6ae)                ;= FFh
-ram:ram:f3aa    3c              INC         blocking                                
+ram:ram:f3a7    3aaef6          LD          A,(BYTE_ram_f6ae)                       ;= FFh
+ram:ram:f3aa    3c              INC         A                                       
 ram:ram:f3ab    be              CP          (HL=>currentSector)                     ;= 1h
 ram:ram:f3ac    2026            JR          NZ,LAB_ram_f3d4                         
 ram:ram:f3ae    cd05f4          CALL        FUN_ram_f405                            ;undefined FUN_ram_f405()
 ram:ram:f3b1    cd16f4          CALL        FUN_ram_f416                            ;undefined FUN_ram_f416()
-ram:ram:f3b4    3e01            LD          blocking,0x1                            
-ram:ram:f3b6    32aff6          LD          (BYTE_ram_f6af),blocking                
-ram:ram:f3b9    3aaef6          LD          blocking,(BYTE_ram_f6ae)                ;= FFh
-ram:ram:f3bc    3c              INC         blocking                                
-ram:ram:f3bd    32aef6          LD          (BYTE_ram_f6ae),blocking                ;= FFh
-ram:ram:f3c0    3aa5f6          LD          blocking,(currentSector)                ;= 1h
+ram:ram:f3b4    3e01            LD          A,0x1                                   
+ram:ram:f3b6    32aff6          LD          (BYTE_ram_f6af),A                       
+ram:ram:f3b9    3aaef6          LD          A,(BYTE_ram_f6ae)                       ;= FFh
+ram:ram:f3bc    3c              INC         A                                       
+ram:ram:f3bd    32aef6          LD          (BYTE_ram_f6ae),A                       ;= FFh
+ram:ram:f3c0    3aa5f6          LD          A,(currentSector)                       ;= 1h
 ram:ram:f3c3    e607            AND         0x7                                     
 ram:ram:f3c5    203c            JR          NZ,LAB_ram_f403                         
 ram:ram:f3c7    cdd9f5          CALL        FUN_ram_f5d9                            ;undefined FUN_ram_f5d9()
-ram:ram:f3ca    b7              OR          blocking                                
+ram:ram:f3ca    b7              OR          A                                       
 ram:ram:f3cb    20a0            JR          NZ,LAB_ram_f36d                         
-ram:ram:f3cd    32aff6          LD          (BYTE_ram_f6af),blocking                
-ram:ram:f3d0    32b0f6          LD          (BYTE_ram_f6b0),blocking                
+ram:ram:f3cd    32aff6          LD          (BYTE_ram_f6af),A                       
+ram:ram:f3d0    32b0f6          LD          (BYTE_ram_f6b0),A                       
 ram:ram:f3d3    c9              RET                                                 
                             LAB_ram_f3d4:                 ;XREF[2,0]:   ram:f386,ram:f3ac
-ram:ram:f3d4    3aaff6          LD          blocking,(BYTE_ram_f6af)                
-ram:ram:f3d7    b7              OR          blocking                                
+ram:ram:f3d4    3aaff6          LD          A,(BYTE_ram_f6af)                       
+ram:ram:f3d7    b7              OR          A                                       
 ram:ram:f3d8    2809            JR          Z,LAB_ram_f3e3                          
 ram:ram:f3da    cdd9f5          CALL        FUN_ram_f5d9                            ;undefined FUN_ram_f5d9()
-ram:ram:f3dd    b7              OR          blocking                                
+ram:ram:f3dd    b7              OR          A                                       
 ram:ram:f3de    208d            JR          NZ,LAB_ram_f36d                         
-ram:ram:f3e0    32aff6          LD          (BYTE_ram_f6af),blocking                
+ram:ram:f3e0    32aff6          LD          (BYTE_ram_f6af),A                       
                             LAB_ram_f3e3:                 ;XREF[1,0]:   ram:f3d8
 ram:ram:f3e3    cd05f4          CALL        FUN_ram_f405                            ;undefined FUN_ram_f405()
 ram:ram:f3e6    cd8bf4          CALL        FUN_ram_f48b                            ;undefined FUN_ram_f48b()
-ram:ram:f3e9    b7              OR          blocking                                
+ram:ram:f3e9    b7              OR          A                                       
 ram:ram:f3ea    2081            JR          NZ,LAB_ram_f36d                         
-ram:ram:f3ec    3eff            LD          blocking,0xff                           
-ram:ram:f3ee    32b0f6          LD          (BYTE_ram_f6b0),blocking                
+ram:ram:f3ec    3eff            LD          A,0xff                                  
+ram:ram:f3ee    32b0f6          LD          (BYTE_ram_f6b0),A                       
 ram:ram:f3f1    cd16f4          CALL        FUN_ram_f416                            ;undefined FUN_ram_f416()
 ram:ram:f3f4    cdd9f5          CALL        FUN_ram_f5d9                            ;undefined FUN_ram_f5d9()
-ram:ram:f3f7    b7              OR          blocking                                
+ram:ram:f3f7    b7              OR          A                                       
 ram:ram:f3f8    c26df3          JP          NZ,LAB_ram_f36d                         
-ram:ram:f3fb    32aff6          LD          (BYTE_ram_f6af),blocking                
-ram:ram:f3fe    3eff            LD          blocking,0xff                           
-ram:ram:f400    32aef6          LD          (BYTE_ram_f6ae),blocking                ;= FFh
+ram:ram:f3fb    32aff6          LD          (BYTE_ram_f6af),A                       
+ram:ram:f3fe    3eff            LD          A,0xff                                  
+ram:ram:f400    32aef6          LD          (BYTE_ram_f6ae),A                       ;= FFh
                             LAB_ram_f403:                 ;XREF[1,0]:   ram:f3c5
-ram:ram:f403    af              XOR         blocking                                
+ram:ram:f403    af              XOR         A                                       
 ram:ram:f404    c9              RET                                                 
                             ;************************************************************************************************
                             ;*                                           FUNCTION                                           *
                             ;************************************************************************************************
                             ;undefined FUN_ram_f405()
                                                           ;XREF[3,0]:   ram:f28c,ram:f3ae,ram:f3e3
-ram:ram:f405    2aa3f6          LD          HL,(WORD_ram_f6a3)                      ;= 100h
+ram:ram:f405    2aa3f6          LD          HL,(currentDisk)                        ;= 100h
 ram:ram:f408    22a9f6          LD          (BYTE_ram_f6a9),HL                      ;= FFh
 ram:ram:f40b    3aa5f6          LD          A,(currentSector)                       ;= 1h
 ram:ram:f40e    3d              DEC         A                                       
@@ -1383,14 +1307,14 @@ ram:ram:f4ca    f3              DI
 ram:ram:f4cb    cd32f5          CALL        FUN_ram_f532                            ;undefined FUN_ram_f532()
 ram:ram:f4ce    fb              EI                                                  
 ram:ram:f4cf    c1              POP         BC                                      
-ram:ram:f4d0    dbc0            IN          blocking,(DAT_io_00c0)                  
+ram:ram:f4d0    dbc0            IN          A,(DAT_io_00c0)                         
 ram:ram:f4d2    e6fd            AND         0xfd                                    
-ram:ram:f4d4    b7              OR          blocking                                
+ram:ram:f4d4    b7              OR          A                                       
 ram:ram:f4d5    c8              RET         Z                                       
 ram:ram:f4d6    e610            AND         0x10                                    
 ram:ram:f4d8    c49ff5          CALL        NZ,FUN_ram_f59f                         ;undefined FUN_ram_f59f()
 ram:ram:f4db    10e6            DJNZ        LAB_ram_f4c3                            
-ram:ram:f4dd    3e01            LD          blocking,0x1                            
+ram:ram:f4dd    3e01            LD          A,0x1                                   
 ram:ram:f4df    c9              RET                                                 
                             LAB_ram_f4e0:                 ;XREF[2,0]:   ram:f1d7,ram:f4f8
 ram:ram:f4e0    060a            LD          B,0xa                                   
@@ -1479,7 +1403,7 @@ ram:ram:f54d    e9              JP          (HL)
           ;local_res0    undefined2           0                      ;XREF[6,0]:   ram:f56c,ram:f56d,ram:f56e,ram:f56f,ram:f570
                                                                      ;             ram:f571
                                                           ;XREF[3,0]:   ram:f4c3,ram:f4e2,ram:f579
-ram:ram:f54e    3aa3f6          LD          A,(WORD_ram_f6a3)                       ;= 100h
+ram:ram:f54e    3aa3f6          LD          A,(currentDisk)                         ;= 100h
 ram:ram:f551    4f              LD          C,A                                     
 ram:ram:f552    cd41f4          CALL        FUN_ram_f441                            ;undefined FUN_ram_f441()
 ram:ram:f555    3aa4f6          LD          A,(currentTrack)                        
@@ -1738,21 +1662,21 @@ ram:ram:f6a0    ff              ??          FFh
                             currentDMA:                   ;XREF[7,0]:   ram:efad,ram:f1bc,ram:f1ed,ram:f2fe
                                                           ;             ram:f33d,ram:f436,ram:f57b
 ram:ram:f6a1    8000            dw          80h                                     
-                            WORD_ram_f6a3:                ;XREF[15,10]: ram:f154,ram:f15b,ram:f197,ram:f1ce
-                                                          ;             ram:f1e2,ram:f1f8,ram:f20d,ram:f22f
-                                                          ;             ram:f25e,ram:f2b1,ram:f2d6,ram:f2f8
-                                                          ;             ram:f348,ram:f405,ram:f54e,ram:f179
-                                                          ;             ram:f1a7,ram:f1e2,ram:f20d,ram:f215
-                                                          ;             ram:f221,ram:f25e,ram:f266,ram:f270
-                                                          ;             ram:f555
+                            currentDisk:                  ;XREF[16,10]: ram:f154,ram:f15b,ram:f197,ram:f1ce
+                                                          ;             ram:f1da,ram:f1e2,ram:f1f8,ram:f20d
+                                                          ;             ram:f22f,ram:f25e,ram:f2b1,ram:f2d6
+                                                          ;             ram:f2f8,ram:f348,ram:f405,ram:f54e
+                                                          ;             ram:f179,ram:f1a7,ram:f1e2,ram:f20d
+                                                          ;             ram:f215,ram:f221,ram:f25e,ram:f266
+                                                          ;             ram:f270,ram:f555
 ram:ram:f6a3    0001            dw          100h                                    
                             currentSector:                ;XREF[13,0]:  ram:f1ac,ram:f1ff,ram:f236,ram:f24d
                                                           ;             ram:f2de,ram:f308,ram:f34e,ram:f38b
                                                           ;             ram:f3ab,ram:f3c0,ram:f40b,ram:f416
                                                           ;             ram:f55b
 ram:ram:f6a5    01              db          1h                                      
-                            WORD_ram_f6a6:                ;XREF[6,1]:   ram:efbe,ram:f1e3,ram:f2d3,ram:f31e
-                                                          ;             ram:f34b,ram:f367,ram:f1e3
+                            WORD_ram_f6a6:                ;XREF[7,1]:   ram:efbe,ram:f1dd,ram:f1e3,ram:f2d3
+                                                          ;             ram:f31e,ram:f34b,ram:f367,ram:f1e3
 ram:ram:f6a6    ffff            dw          FFFFh                                   
                             BYTE_ram_f6a8:                ;XREF[4,0]:   ram:f2ed,ram:f324,ram:f351,ram:f5cf
 ram:ram:f6a8    ff              db          FFh                                     
