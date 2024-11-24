@@ -1,6 +1,22 @@
 # MBC-1000
 Reverse-engineering notes &amp; documentation of the Sanyo MBC-1000 computer
 
+## Jumpers
+
+There are four undocumented jumpers on the board. 
+
+- JP1
+  - Open by default.
+- JP2
+  - Open by default.
+- JP3
+  - Bridged by default. Connects ROM pin 21 to Vcc.
+- JP4
+  - Open by default. Connects ROM pin 21 to buffered A11 signal. 
+- JP5
+  - Bridged by default. 
+
+If the trace shorting JP3 is cut and a jumper inserted into JP4, then the board should support a 2732 (4kB) EPROM in place of the 2716 (2kB) EPROM. The system memory map when the startup ROM overlay is enabled does support a 4kB EPROM.
 
 ## Address Map
 
