@@ -2151,7 +2151,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(property "Reference" "U"
-			(at -7.62 12.7 0)
+			(at -7.62 11.43 0)
 			(do_not_autoplace)
 			(effects
 				(font
@@ -2160,8 +2160,8 @@
 				(justify left)
 			)
 		)
-		(property "Value" "MC14585"
-			(at 7.62 12.7 0)
+		(property "Value" "MC14584"
+			(at 7.62 11.43 0)
 			(do_not_autoplace)
 			(effects
 				(font
@@ -2171,7 +2171,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at -10.16 8.89 0)
+			(at -10.16 7.62 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2180,7 +2180,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at -10.16 8.89 0)
+			(at -10.16 7.62 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2188,8 +2188,8 @@
 				(hide yes)
 			)
 		)
-		(property "Description" ""
-			(at -10.16 8.89 0)
+		(property "Description" "Hex Schmitt Trigger"
+			(at 0 -11.43 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2199,9 +2199,9 @@
 		)
 		(symbol "MC14585_0_0"
 			(pin input line
-				(at -12.7 8.89 0)
+				(at -12.7 7.62 0)
 				(length 5.08)
-				(name "B2"
+				(name "A1"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -2216,10 +2216,10 @@
 					)
 				)
 			)
-			(pin input line
-				(at 12.7 -6.35 180)
+			(pin output line
+				(at 12.7 -2.54 180)
 				(length 5.08)
-				(name "A0"
+				(name "Y5"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -2235,9 +2235,9 @@
 				)
 			)
 			(pin input line
-				(at 12.7 -3.81 180)
+				(at 12.7 0 180)
 				(length 5.08)
-				(name "B0"
+				(name "A5"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -2253,9 +2253,9 @@
 				)
 			)
 			(pin output line
-				(at 12.7 -1.27 180)
+				(at 12.7 2.54 180)
 				(length 5.08)
-				(name "A<B"
+				(name "Y6"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -2270,10 +2270,10 @@
 					)
 				)
 			)
-			(pin output line
-				(at 12.7 1.27 180)
+			(pin input line
+				(at 12.7 5.08 180)
 				(length 5.08)
-				(name "A>B"
+				(name "A6"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -2288,10 +2288,10 @@
 					)
 				)
 			)
-			(pin input line
-				(at 12.7 3.81 180)
+			(pin power_in line
+				(at 12.7 7.62 180)
 				(length 5.08)
-				(name "B3"
+				(name "Vdd"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -2306,46 +2306,10 @@
 					)
 				)
 			)
-			(pin input line
-				(at 12.7 6.35 180)
+			(pin output line
+				(at -12.7 5.08 0)
 				(length 5.08)
-				(name "A3"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "15"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(pin power_in line
-				(at 12.7 8.89 180)
-				(length 5.08)
-				(name "Vdd"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "16"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(pin input line
-				(at -12.7 6.35 0)
-				(length 5.08)
-				(name "A2"
+				(name "Y1"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -2360,10 +2324,10 @@
 					)
 				)
 			)
-			(pin output line
-				(at -12.7 3.81 0)
+			(pin input line
+				(at -12.7 2.54 0)
 				(length 5.08)
-				(name "A=B"
+				(name "A2"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -2378,10 +2342,10 @@
 					)
 				)
 			)
-			(pin input line
-				(at -12.7 1.27 0)
+			(pin output line
+				(at -12.7 0 0)
 				(length 5.08)
-				(name "A>B"
+				(name "Y2"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -2397,9 +2361,9 @@
 				)
 			)
 			(pin input line
-				(at -12.7 -1.27 0)
+				(at -12.7 -2.54 0)
 				(length 5.08)
-				(name "A<B"
+				(name "A3"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -2414,10 +2378,10 @@
 					)
 				)
 			)
-			(pin input line
-				(at -12.7 -3.81 0)
+			(pin output line
+				(at -12.7 -5.08 0)
 				(length 5.08)
-				(name "A=B"
+				(name "Y3"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -2432,10 +2396,10 @@
 					)
 				)
 			)
-			(pin input line
-				(at -12.7 -6.35 0)
+			(pin power_in line
+				(at -12.7 -7.62 0)
 				(length 5.08)
-				(name "A1"
+				(name "Vss"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -2450,10 +2414,10 @@
 					)
 				)
 			)
-			(pin power_in line
-				(at -12.7 -8.89 0)
+			(pin output line
+				(at 12.7 -7.62 180)
 				(length 5.08)
-				(name "Vss"
+				(name "Y4"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -2469,9 +2433,9 @@
 				)
 			)
 			(pin input line
-				(at 12.7 -8.89 180)
+				(at 12.7 -5.08 180)
 				(length 5.08)
-				(name "B1"
+				(name "A4"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -2489,8 +2453,8 @@
 		)
 		(symbol "MC14585_1_1"
 			(rectangle
-				(start -7.62 11.43)
-				(end 7.62 -11.43)
+				(start -7.62 10.16)
+				(end 7.62 -10.16)
 				(stroke
 					(width 0)
 					(type default)
