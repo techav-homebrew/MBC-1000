@@ -4,7 +4,7 @@ The exact function of the timer is not clear, but it appears to be used to provi
 
 The card runs at half the bus clock of the system. The card clock is wired to the UART CLK input and the Timer CLK0 input. Output of Timer 0 drives the clock for Timer 1, which is used for the interrupt circuit previously described.
 
-The schematic included here has been reverse-engineered from a unit manufacturered ca. late 1982.
+The schematic included here has been reverse-engineered from a unit manufacturered ca. late 1982. A schematic was included as an appendix in some copies of the manual.
 
 ## Addressing
 The card's base address is selected by JP1, which is driven by the A-block outputs of IC1 (74LS139). IC1 A-block is enabled by output 5 of IC8 (74LS42), which is asserted when Address bits 7-5 equal 5 (A[7:5]=$5). IC1 address signals 1A & 1B are wired to A3 & A4, respectively. This results in an selectable base address range of `$A0` through `$BF` for the card. 
@@ -72,3 +72,18 @@ JP4 and JP5 are listed in the manual as not used for this card, and they are not
 
 ### Unlabeled Jumper
 There is one unlabeled normally-open solder-bridge jumper which would connect DB25 pin 14 to ground. In RS232 specification, this is the secondary transmit signal. 
+
+## DB25 Pinout
+
+| Signal | Signal Name          | Pin No.   |
+| :---:  | :---:                | :---:     |
+| FG     | Frame Ground         | 1         |
+| TxD    | Send Data            | 2         |
+| RxD    | Receive Data         | 3         |
+| RTS    | Request to Send Data | 4         |
+| CTS    | Clear to Send Data   | 5         |
+| DTR    | Data Terminal Ready  | 20        | 
+| DSR    | Data Set Ready       | 6         |
+| TxC    | Send Data Carrier    | 15        |
+| RxC    | Receive Data Carrier | 17        |
+| SG     | Signal Ground        | 7         |
