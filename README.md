@@ -82,6 +82,8 @@ Drives use standard 34-contact card edge connectors for data & control. The moth
 
 BIOS has data tables for 8" drives, and contemporary advertisements listed an 8" drive option. Some advertisements & reviews also mentioned Winchester hard drive options. ( [CPM Review Nov 1982](https://ia802805.us.archive.org/23/items/198211CPMReview/198211%20CPM%20Review.pdf) ).
 
+Since the computer uses standard Shugart interface for floppy drives, it is compatible with Gotek emulators without any additional hardware (tested using FlashFloppy firmware).
+
 ## Monitor
 
 The monitor is an NEC green phosphor display, type number C1270P1H-ARG. Its analog drive board is labeled with the Sanyo logo and `PH 50-002` & `PH-50E`.
