@@ -83,51 +83,53 @@ Each IC has a 100nF 80%-20% (204Z) ceramic disk capacitor for decoupling. These 
 There are two 47uF 16V axial electrolytic capacitors near the power supply connector. These are not labeled either. 
 
 #### Resistors
-... eh, I'll translate these into values later. 
-- R1 SIP resistor pack, 9X102J
-- R2 SIP resistor pack, 9X102J
-- R5 brown-black-red-gold
-- R6 green-blue-brown-gold
-- R7 brown-black-orange-gold
-- R8 brown-black-orange-gold
-- R9 orange-orange-red-gold
-- R10 brown-green-brown-gold
-- R11 brown-green-brown-gold
-- R12 brown-green-brown-gold
-- R13 brown-green-brown-gold
-- R14 brown-brown-black-red-brown
-- R15 brown-black-black-yellow-brown
-- R16 grey-red-red-gold
-- R17 white-brown-black-brown-brown
-- R18 white-brown-black-brown-brown
-- R19 brown-black-black-yellow-brown
-- R20 brown-black-black-yellow-brown
-- R21 brown-black-black-yellow-brown
-- R22 yellow-violet-red-gold
-- R23 yellow-violet-black-brown-brown
-- R24 brown-black-red-gold
-- R27 orange-orange-brown-gold
-- R28 brown-red-orange-gold
-- R29 orange-orange-brown-gold
-- R30 brown-black-red-gold
-- R31 yellow-violet-red-gold
-- R32 orange-orange-red-gold
-- R33 orange-orange-red-gold
-- R34 orange-orange-red-gold
-- R35 brown-black-orange-gold
-- R36 orange-orange-red-gold
-- R37 brown-black-yellow-gold
-- R38 brown-black-red-gold
-- R39 brown-black-red-gold
-- R40 brown-black-red-gold
-- R41 red-red-brown-gold
-- R42 orange-orange-red-gold
-- R43 orange-orange-red-gold
-- R44 orange-orange-red-gold
-- R45 orange-orange-red-gold
-- R46 brown-black-red-gold
-- M16A 10K DIP resistor pack
-- VR 502 variable resistor 
+
+| Position | Code                            |     Value |
+| -------- | ------------------------------- | --------: |
+| R1       | SIP resistor pack, 9X102J       |           |
+| R2       | SIP resistor pack, 9X102J       |           |
+| R5       | brown-black-red-gold            |   1k Ω 5% |
+| R6       | green-blue-brown-gold           |  560 Ω 5% |
+| R7       | brown-black-orange-gold         |  10k Ω 5% |
+| R8       | brown-black-orange-gold         |  10k Ω 5% |
+| R9       | orange-orange-red-gold          | 3.3k Ω 5% |
+| R10      | brown-green-brown-gold          |  150 Ω 5% |
+| R11      | brown-green-brown-gold          |  150 Ω 5% |
+| R12      | brown-green-brown-gold          |  150 Ω 5% |
+| R13      | brown-green-brown-gold          |  150 Ω 5% |
+| R14      | brown-brown-black-red-brown     |  11k Ω 1% |
+| R15      | brown-black-black-yellow-brown  |   1M Ω 1% |
+| R16      | grey-red-red-gold               | 8.2k Ω 5% |
+| R17      | white-brown-black-brown-brown   | 9.1k Ω 1% |
+| R18      | white-brown-black-brown-brown   | 9.1k Ω 1% |
+| R19      | brown-black-black-yellow-brown  |   1M Ω 1% |
+| R20      | brown-black-black-yellow-brown  |   1M Ω 1% |
+| R21      | brown-black-black-yellow-brown  |   1M Ω 1% |
+| R22      | yellow-violet-red-gold          | 4.7k Ω 5% |
+| R23      | yellow-violet-black-brown-brown | 9.1k Ω 1% |
+| R24      | brown-black-red-gold            |   1k Ω 5% |
+| R27      | orange-orange-brown-gold        |  330 Ω 5% |
+| R28      | brown-red-orange-gold           |  12k Ω 5% |
+| R29      | orange-orange-brown-gold        |  330 Ω 5% |
+| R30      | brown-black-red-gold            |   1k Ω 5% |
+| R31      | yellow-violet-red-gold          | 4.7k Ω 5% |
+| R32      | orange-orange-red-gold          | 3.3k Ω 5% |
+| R33      | orange-orange-red-gold          | 3.3k Ω 5% |
+| R34      | orange-orange-red-gold          | 3.3k Ω 5% |
+| R35      | brown-black-orange-gold         |  10k Ω 5% |
+| R36      | orange-orange-red-gold          | 3.3k Ω 5% |
+| R37      | brown-black-yellow-gold         | 100k Ω 5% |
+| R38      | brown-black-red-gold            |   1k Ω 5% |
+| R39      | brown-black-red-gold            |   1k Ω 5% |
+| R40      | brown-black-red-gold            |   1k Ω 5% |
+| R41      | red-red-brown-gold              |  220 Ω 5% |
+| R42      | orange-orange-red-gold          | 3.3k Ω 5% |
+| R43      | orange-orange-red-gold          | 3.3k Ω 5% |
+| R44      | orange-orange-red-gold          | 3.3k Ω 5% |
+| R45      | orange-orange-red-gold          | 3.3k Ω 5% |
+| R46      | brown-black-red-gold            |   1k Ω 5% |
+| M16A     | 10K DIP resistor pack           |           |
+| VR       | 502 variable resistor           |           |
 
 #### Capacitors
 - C1 0.47u 35V Tantalum
